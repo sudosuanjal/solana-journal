@@ -1,0 +1,50 @@
+# ======================
+# Global junk
+# ======================
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.swp
+
+# ======================
+# Environment files
+# ======================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ======================
+# Node / Next.js
+# ======================
+node_modules/
+.next/
+out/
+dist/
+coverage/
+.vscode/
+.vercel/
+*.cache
+
+# ======================
+# Anchor / Rust
+# ======================
+target/
+.marge/
+.anchor/
+Cargo.lock
+
+# ======================
+# Solana
+# ======================
+**/keys.json
+*.key
+*.json.tmp
+
+# ======================
+# OS / Editor specific
+# ======================
+.idea/
+*.iml
