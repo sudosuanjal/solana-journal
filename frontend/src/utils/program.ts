@@ -2,8 +2,9 @@ import { Connection, PublicKey } from "@solana/web3.js";
 import idl from "../idl/anchor_program.json";
 import { AnchorProgram as Journal } from "../types/anchor_program";
 import { Program, AnchorProvider, Wallet } from "@coral-xyz/anchor";
+import { Tienne } from "next/font/google";
 
-const programId = new PublicKey(idl.address);
+const PROGRAM_ID = new PublicKey(idl.address);
 export interface JournalEntry {
   owner: PublicKey;
   title: string;
@@ -14,6 +15,13 @@ export const getProgram = (connection: Connection, wallet: Wallet) => {
   const provider = new AnchorProvider(connection, wallet, {});
   return new Program(idl as Journal, provider);
 };
+
+export function getJournalEntryPDA(title: string, owner: PublicKey) {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from(title), owner.toBuffer()],
+    PROGRAM_ID
+  );
+}
 
 export async function getAllJournalEntries(
   program: Program<any>,
