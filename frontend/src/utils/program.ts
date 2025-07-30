@@ -1,8 +1,7 @@
-import { Connection, PublicKey } from "@solana/web3.js";
+import { Connection, PublicKey, SystemProgram } from "@solana/web3.js";
 import idl from "../idl/anchor_program.json";
 import { AnchorProgram as Journal } from "../types/anchor_program";
 import { Program, AnchorProvider, Wallet } from "@coral-xyz/anchor";
-import { Tienne } from "next/font/google";
 
 const PROGRAM_ID = new PublicKey(idl.address);
 export interface JournalEntry {
@@ -23,11 +22,31 @@ export function getJournalEntryPDA(title: string, owner: PublicKey) {
   );
 }
 
+export async function createJournalEntry(
+  program: Program<any>,
+  title: string,
+  message: string,
+  owner: PublicKey
+) {
+  const [journalEntryPDA] = getJournalEntryPDA(title, owner);
+
+  return await program.methods
+    .createJournalEntry(title, message)
+    .accounts({
+      journalEntry: journalEntryPDA,
+      owner: owner,
+      systemProgram: SystemProgram.programId,
+    })
+    .rpc();
+}
+
 export async function getAllJournalEntries(
   program: Program<any>,
   owner: PublicKey
 ): Promise<(JournalEntry & { publicKey: PublicKey })[]> {
   try {
+    console.log(program.account);
+
     const accounts = await program.account.journalEntryState.all([
       {
         memcmp: {
