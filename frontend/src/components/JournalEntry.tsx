@@ -118,7 +118,7 @@ export default function JournalEntry() {
         className="w-full bg-green-400 hover:bg-green-500 text-white font-medium py-4 rounded-2xl text-base"
         size="lg"
       >
-        Go to Gratitude Journal
+        Submit Journal
       </Button>
     </div>
   );
