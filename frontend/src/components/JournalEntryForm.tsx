@@ -52,83 +52,77 @@ export default function JournalEntryForm() {
   const [message, setMessage] = useState("");
 
   return (
-    <div className="max-w-sm mx-auto bg-gray-50 p-6 min-h-screen">
-      {/* Header */}
-      <div className="mb-8">
-        <h1
-          className="text-2xl font-bold text-gray-800 leading-tight"
-          style={{ fontFamily: "Kalam, cursive" }}
+    <div className="space-y-6 flex flex-col h-full">
+      <div className="grid grid-cols-2 gap-4">
+        {/* Awesome mood on the left */}
+        <div
+          key={moodOptions[0].id}
+          className={`${moodOptions[0].bgColor} ${
+            moodOptions[0].borderColor
+          } rounded-md p-4 cursor-pointer transition-all duration-200 hover:scale-105 border-2 flex items-center justify-center row-span-2 ${
+            selectedMood === moodOptions[0].id
+              ? "ring-2 ring-gray-900 ring-offset-2"
+              : ""
+          }`}
+          onClick={() => setSelectedMood(moodOptions[0].id)}
         >
-          How are you
-          <br />
-          feeling today?
-        </h1>
-      </div>
-
-      {/* Mood Selection Grid */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
-        {moodOptions.map((mood, index) => (
-          <div
-            key={mood.id}
-            className={`${
-              index === 0 ? "col-span-1 row-span-2" : "col-span-1"
-            } ${mood.bgColor} ${
-              mood.borderColor
-            } rounded-2xl p-4 cursor-pointer transition-all duration-200 hover:scale-105 border-2 ${
-              selectedMood === mood.id
-                ? "ring-2 ring-gray-900 ring-offset-2"
-                : ""
-            }`}
-            onClick={() => setSelectedMood(mood.id)}
-          >
-            <div className="flex flex-col items-center justify-center h-full">
-              <div
-                className={`text-3xl mb-2 ${
-                  index === 0 ? "text-4xl mb-4" : ""
-                }`}
-              >
-                {mood.emoji}
-              </div>
-              <span
-                className={`text-sm font-medium ${mood.textColor} ${
-                  index === 0 ? "text-base" : ""
-                }`}
-                style={{ fontFamily: "Kalam, cursive" }}
-              >
-                {mood.label}
-              </span>
-            </div>
+          <div className="flex flex-col items-center justify-center h-full">
+            <div className="text-4xl mb-4">{moodOptions[0].emoji}</div>
+            <span
+              className={`text-base font-medium ${moodOptions[0].textColor}`}
+              style={{ fontFamily: "Kalam, cursive" }}
+            >
+              {moodOptions[0].label}
+            </span>
           </div>
-        ))}
-      </div>
-
-      {/* Input Fields */}
-      <div className="mb-8 space-y-4">
-        <div>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="w-full bg-white rounded-xl p-4 text-gray-800 outline-none focus:ring-2 focus:ring-gray-900 placeholder-gray-500 border-2 border-gray-200 focus:border-gray-900 transition-colors"
-            placeholder="Enter title..."
-            style={{ fontFamily: "Kalam, cursive" }}
-          />
         </div>
-        <div>
-          <textarea
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            className="w-full bg-white rounded-xl p-4 text-gray-800 outline-none focus:ring-2 focus:ring-gray-900 placeholder-gray-500 resize-none border-2 border-gray-200 focus:border-gray-900 transition-colors"
-            placeholder="Enter your message..."
-            rows={4}
-            style={{ fontFamily: "Kalam, cursive" }}
-          />
+
+        {/* Other moods on the right in a 2x2 grid */}
+        <div className="grid grid-cols-2 gap-4">
+          {moodOptions.slice(1).map((mood) => (
+            <div
+              key={mood.id}
+              className={`${mood.bgColor} ${
+                mood.borderColor
+              } rounded-md p-4 cursor-pointer transition-all duration-200 hover:scale-105 border-2 flex items-center justify-center ${
+                selectedMood === mood.id
+                  ? "ring-2 ring-gray-900 ring-offset-2"
+                  : ""
+              }`}
+              onClick={() => setSelectedMood(mood.id)}
+            >
+              <div className="flex flex-col items-center justify-center h-full">
+                <div className="text-3xl mb-2">{mood.emoji}</div>
+                <span
+                  className={`text-sm font-medium ${mood.textColor}`}
+                  style={{ fontFamily: "Kalam, cursive" }}
+                >
+                  {mood.label}
+                </span>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
-
-      {/* Action Button */}
+      <div className="space-y-4 flex-grow flex flex-col">
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          className="w-full bg-white rounded-md p-4 text-gray-800 outline-none focus:ring-2 focus:ring-gray-900 placeholder-gray-500 border-2 border-gray-200 focus:border-gray-900 transition-colors"
+          placeholder="Enter title..."
+          style={{ fontFamily: "Kalam, cursive" }}
+        />
+        <textarea
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          className="w-full bg-white rounded-md p-4 text-gray-800 outline-none focus:ring-2 focus:ring-gray-900 placeholder-gray-500 resize-none border-2 border-gray-200 focus:border-gray-900 transition-colors flex-grow"
+          placeholder="Enter your message..."
+          style={{ fontFamily: "Kalam, cursive" }}
+        />
+      </div>
       <Button
-        className="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-4 rounded-2xl text-base border-2 border-gray-900 transition-colors"
+        className="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-4 rounded-md text-base border-2 border-gray-900 transition-colors"
         size="lg"
         style={{ fontFamily: "Kalam, cursive" }}
       >
