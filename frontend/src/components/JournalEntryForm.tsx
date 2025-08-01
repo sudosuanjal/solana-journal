@@ -8,41 +8,41 @@ const moodOptions = [
     id: "awesome",
     label: "Awesome",
     emoji: "😊",
-    bgColor: "bg-orange-100",
-    textColor: "text-orange-700",
-    borderColor: "border-orange-200",
+    bgColor: "#F8F8FF",
+    textColor: "#3E3B39",
+    borderColor: "#CAC9CD",
   },
   {
     id: "happy",
     label: "Happy",
     emoji: "😄",
-    bgColor: "bg-yellow-100",
-    textColor: "text-yellow-700",
-    borderColor: "border-yellow-200",
+    bgColor: "#CAC9CD",
+    textColor: "#3E3B39",
+    borderColor: "#9B9A9C",
   },
   {
     id: "okay",
     label: "Okay",
     emoji: "😐",
-    bgColor: "bg-green-100",
-    textColor: "text-green-700",
-    borderColor: "border-green-200",
+    bgColor: "#9B9A9C",
+    textColor: "#F8F8FF",
+    borderColor: "#6D6A6A",
   },
   {
     id: "bad",
     label: "Bad",
     emoji: "😢",
-    bgColor: "bg-blue-100",
-    textColor: "text-blue-700",
-    borderColor: "border-blue-200",
+    bgColor: "#6D6A6A",
+    textColor: "#F8F8FF",
+    borderColor: "#3E3B39",
   },
   {
     id: "terrible",
     label: "Terrible",
     emoji: "😭",
-    bgColor: "bg-purple-100",
-    textColor: "text-purple-700",
-    borderColor: "border-purple-200",
+    bgColor: "#3E3B39",
+    textColor: "#F8F8FF",
+    borderColor: "#6D6A6A",
   },
 ];
 
@@ -57,20 +57,25 @@ export default function JournalEntryForm() {
         {/* Awesome mood on the left */}
         <div
           key={moodOptions[0].id}
-          className={`${moodOptions[0].bgColor} ${
-            moodOptions[0].borderColor
-          } rounded-md p-4 cursor-pointer transition-all duration-200 hover:scale-105 border-2 flex items-center justify-center row-span-2 ${
+          className={`rounded-md p-4 cursor-pointer transition-all duration-200 hover:scale-105 border-2 flex items-center justify-center row-span-2 ${
             selectedMood === moodOptions[0].id
               ? "ring-2 ring-gray-900 ring-offset-2"
               : ""
           }`}
           onClick={() => setSelectedMood(moodOptions[0].id)}
+          style={{
+            backgroundColor: moodOptions[0].bgColor,
+            borderColor: moodOptions[0].borderColor,
+          }}
         >
           <div className="flex flex-col items-center justify-center h-full">
             <div className="text-4xl mb-4">{moodOptions[0].emoji}</div>
             <span
-              className={`text-base font-medium ${moodOptions[0].textColor}`}
-              style={{ fontFamily: "Kalam, cursive" }}
+              className="text-base font-medium"
+              style={{
+                fontFamily: "Kalam, cursive",
+                color: moodOptions[0].textColor,
+              }}
             >
               {moodOptions[0].label}
             </span>
@@ -82,20 +87,25 @@ export default function JournalEntryForm() {
           {moodOptions.slice(1).map((mood) => (
             <div
               key={mood.id}
-              className={`${mood.bgColor} ${
-                mood.borderColor
-              } rounded-md p-4 cursor-pointer transition-all duration-200 hover:scale-105 border-2 flex items-center justify-center ${
+              className={`rounded-md p-4 cursor-pointer transition-all duration-200 hover:scale-105 border-2 flex items-center justify-center ${
                 selectedMood === mood.id
                   ? "ring-2 ring-gray-900 ring-offset-2"
                   : ""
               }`}
               onClick={() => setSelectedMood(mood.id)}
+              style={{
+                backgroundColor: mood.bgColor,
+                borderColor: mood.borderColor,
+              }}
             >
               <div className="flex flex-col items-center justify-center h-full">
                 <div className="text-3xl mb-2">{mood.emoji}</div>
                 <span
-                  className={`text-sm font-medium ${mood.textColor}`}
-                  style={{ fontFamily: "Kalam, cursive" }}
+                  className="text-sm font-medium"
+                  style={{
+                    fontFamily: "Kalam, cursive",
+                    color: mood.textColor,
+                  }}
                 >
                   {mood.label}
                 </span>
@@ -104,6 +114,7 @@ export default function JournalEntryForm() {
           ))}
         </div>
       </div>
+
       <div className="space-y-4 flex-grow flex flex-col">
         <input
           type="text"
@@ -121,6 +132,7 @@ export default function JournalEntryForm() {
           style={{ fontFamily: "Kalam, cursive" }}
         />
       </div>
+
       <Button
         className="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-4 rounded-md text-base border-2 border-gray-900 transition-colors"
         size="lg"
