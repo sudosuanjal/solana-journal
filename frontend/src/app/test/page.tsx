@@ -15,6 +15,7 @@ const CreateJournalPage = () => {
   const [status, setStatus] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<string | null>("waiting...");
+  const [mood, setMood] = useState<string>("Terrible");
 
   useEffect(() => {
     const fetchProgram = async () => {
@@ -67,6 +68,7 @@ const CreateJournalPage = () => {
         program,
         title,
         message,
+        mood,
         publicKey
       );
       console.log("wallet: ", wallet?.adapter);

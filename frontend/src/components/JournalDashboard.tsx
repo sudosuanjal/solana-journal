@@ -61,12 +61,17 @@ export default function JournalDashboard() {
       const program = await getProgram(connection, wallet?.adapter as any);
       const data = await getAllJournalEntries(program, publicKey);
       setJournalEntries(data);
+      console.log(data);
     } catch (error) {
       console.error("Error fetching journal entries:", error);
     } finally {
       setLoading(false);
     }
   };
+
+  function getMoodKey(moodObj: any): string {
+    return moodObj ? Object.keys(moodObj)[0] : "happy"; // fallback to 'happy'
+  }
 
   useEffect(() => {
     if (publicKey && wallet) {
@@ -85,8 +90,9 @@ export default function JournalDashboard() {
   return (
     <div className="space-y-6">
       {journalEntries.map((entry) => {
+        const moodKey = getMoodKey(entry.mood); // ✅ extract string key
         const mood = moodOptions.find(
-          (m) => m.label.toLowerCase() === entry.modalLabel?.toLowerCase()
+          (m) => m.id.toLowerCase() === moodKey.toLowerCase()
         );
 
         const cardStyles = {
@@ -108,7 +114,7 @@ export default function JournalDashboard() {
                   className="text-sm text-gray-600 font-medium"
                   style={{ fontFamily: "Kalam, cursive" }}
                 >
-                  {entry.date || new Date().toLocaleDateString()}
+                  {entry.created_at || new Date().toLocaleDateString()}
                 </span>
               </div>
               <div
@@ -126,7 +132,7 @@ export default function JournalDashboard() {
                     color: "#1F2937",
                   }}
                 >
-                  {entry.modalLabel || "Happy"}
+                  {mood?.label || "Happy"}
                 </span>
               </div>
             </div>

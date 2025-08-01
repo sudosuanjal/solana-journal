@@ -8,6 +8,7 @@ export interface JournalEntry {
   owner: PublicKey;
   title: string;
   message: string;
+  mood: string;
 }
 
 export const getProgram = (connection: Connection, wallet: Wallet) => {
@@ -26,15 +27,18 @@ export async function createJournalEntry(
   program: Program<any>,
   title: string,
   message: string,
+  mood: string,
   owner: PublicKey
 ) {
+  console.log("mood", mood);
+
   const [journalEntryPDA] = getJournalEntryPDA(title, owner);
 
   return await program.methods
-    .createJournalEntry(title, message)
+    .createJournalEntry(title, message, { [mood.toLowerCase()]: {} })
     .accounts({
       journalEntry: journalEntryPDA,
-      owner: owner,
+      owner,
       systemProgram: SystemProgram.programId,
     })
     .rpc();

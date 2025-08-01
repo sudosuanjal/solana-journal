@@ -51,6 +51,14 @@ export type AnchorProgram = {
         {
           name: "message";
           type: "string";
+        },
+        {
+          name: "mood";
+          type: {
+            defined: {
+              name: "mood";
+            };
+          };
         }
       ];
     },
@@ -129,6 +137,14 @@ export type AnchorProgram = {
         {
           name: "message";
           type: "string";
+        },
+        {
+          name: "mood";
+          type: {
+            defined: {
+              name: "mood";
+            };
+          };
         }
       ];
     }
@@ -156,6 +172,47 @@ export type AnchorProgram = {
           {
             name: "message";
             type: "string";
+          },
+          {
+            name: "mood";
+            type: {
+              defined: {
+                name: "mood";
+              };
+            };
+          },
+          {
+            name: "createdAt";
+            type: "i64";
+          },
+          {
+            name: "updatedAt";
+            type: {
+              option: "i64";
+            };
+          }
+        ];
+      };
+    },
+    {
+      name: "mood";
+      type: {
+        kind: "enum";
+        variants: [
+          {
+            name: "awesome";
+          },
+          {
+            name: "happy";
+          },
+          {
+            name: "okay";
+          },
+          {
+            name: "bad";
+          },
+          {
+            name: "terrible";
           }
         ];
       };

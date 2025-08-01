@@ -45,6 +45,14 @@
         {
           "name": "message",
           "type": "string"
+        },
+        {
+          "name": "mood",
+          "type": {
+            "defined": {
+              "name": "Mood"
+            }
+          }
         }
       ]
     },
@@ -123,6 +131,14 @@
         {
           "name": "message",
           "type": "string"
+        },
+        {
+          "name": "mood",
+          "type": {
+            "defined": {
+              "name": "Mood"
+            }
+          }
         }
       ]
     }
@@ -150,6 +166,47 @@
           {
             "name": "message",
             "type": "string"
+          },
+          {
+            "name": "mood",
+            "type": {
+              "defined": {
+                "name": "Mood"
+              }
+            }
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "updated_at",
+            "type": {
+              "option": "i64"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Mood",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Awesome"
+          },
+          {
+            "name": "Happy"
+          },
+          {
+            "name": "Okay"
+          },
+          {
+            "name": "Bad"
+          },
+          {
+            "name": "Terrible"
           }
         ]
       }
