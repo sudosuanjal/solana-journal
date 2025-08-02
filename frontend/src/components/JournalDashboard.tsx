@@ -58,7 +58,7 @@ export default function JournalDashboard() {
     setLoading(true);
 
     try {
-      const program = await getProgram(connection, wallet?.adapter as any);
+      const program = await getProgram(connection, wallet.adapter as any);
       const data = await getAllJournalEntries(program, publicKey);
       setJournalEntries(data);
       console.log(data);
@@ -70,7 +70,7 @@ export default function JournalDashboard() {
   };
 
   function getMoodKey(moodObj: any): string {
-    return moodObj ? Object.keys(moodObj)[0] : "happy"; // fallback to 'happy'
+    return moodObj ? Object.keys(moodObj)[0] : "happy";
   }
 
   useEffect(() => {
@@ -90,15 +90,29 @@ export default function JournalDashboard() {
   return (
     <div className="space-y-6">
       {journalEntries.map((entry) => {
-        const moodKey = getMoodKey(entry.mood); // ✅ extract string key
+        const moodKey = getMoodKey(entry.mood);
+        console.log(entry.created_at);
+
         const mood = moodOptions.find(
           (m) => m.id.toLowerCase() === moodKey.toLowerCase()
         );
 
         const cardStyles = {
           backgroundColor: mood?.bgColor || "#FFFFFF",
-          borderColor: mood?.borderColor || "#E5E7EB", // fallback to gray-200
-          color: mood?.textColor || "#1F2937", // fallback to gray-900
+          borderColor: mood?.borderColor || "#E5E7EB",
+          color: mood?.textColor || "#1F2937",
+        };
+
+        const moodBadgeStyles = {
+          backgroundColor: "#FFFFFF",
+          borderColor: mood?.borderColor || "#D1D5DB",
+          color: "#1F2937",
+        };
+
+        const dateBadgeStyles = {
+          backgroundColor: "#FFFFFF",
+          borderColor: "#D1D5DB",
+          color: "#4B5563",
         };
 
         return (
@@ -108,40 +122,59 @@ export default function JournalDashboard() {
             style={cardStyles}
           >
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 bg-white rounded-md px-4 py-2 border border-gray-300">
-                <Calendar className="w-4 h-4 text-gray-500" />
-                <span
-                  className="text-sm text-gray-600 font-medium"
-                  style={{ fontFamily: "Kalam, cursive" }}
-                >
-                  {entry.created_at || new Date().toLocaleDateString()}
-                </span>
-              </div>
+              {/* Date Badge themed by mood */}
               <div
-                className="flex items-center gap-2 rounded-md px-4 py-2 border border-opacity-20"
+                className="flex items-center gap-2 rounded-md px-4 py-2 border"
                 style={{
+                  backgroundColor: mood?.textColor || "#3E3B39",
                   borderColor: mood?.borderColor || "#D1D5DB",
-                  backgroundColor: "#fff",
                 }}
               >
-                <span className="text-sm">{entry.moodEmoji || "😊"}</span>
+                <Calendar
+                  className="w-4 h-4"
+                  style={{ color: mood?.bgColor || "#F8F8FF" }}
+                />
                 <span
                   className="text-sm font-medium"
                   style={{
                     fontFamily: "Kalam, cursive",
-                    color: "#1F2937",
+                    color: mood?.bgColor || "#F8F8FF",
+                  }}
+                >
+                  {entry.created_at || new Date().toLocaleDateString()}
+                </span>
+              </div>
+
+              {/* Mood Badge themed by mood */}
+              <div
+                className="flex items-center gap-2 rounded-md px-4 py-2 border"
+                style={{
+                  backgroundColor: mood?.bgColor,
+                  borderColor: mood?.borderColor,
+                }}
+              >
+                <span className="text-sm" style={{ color: mood?.textColor }}>
+                  {entry.moodEmoji || mood?.emoji || "😊"}
+                </span>
+                <span
+                  className="text-sm font-medium"
+                  style={{
+                    fontFamily: "Kalam, cursive",
+                    color: mood?.textColor,
                   }}
                 >
                   {mood?.label || "Happy"}
                 </span>
               </div>
             </div>
+
             <h2
               className="text-xl font-bold leading-tight"
               style={{ fontFamily: "Kalam, cursive" }}
             >
               {entry.title}
             </h2>
+
             <p
               className="text-sm leading-relaxed"
               style={{ fontFamily: "Kalam, cursive" }}
