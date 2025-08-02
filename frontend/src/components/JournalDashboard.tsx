@@ -141,8 +141,19 @@ export default function JournalDashboard() {
                   }}
                 >
                   {entry.createdAt
-                    ? new Date(entry.createdAt * 1000).toLocaleDateString()
-                    : new Date().toLocaleDateString()}
+                    ? new Date(entry.createdAt * 1000).toLocaleDateString(
+                        "en-US",
+                        {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        }
+                      )
+                    : new Date().toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })}
                 </span>
               </div>
 
