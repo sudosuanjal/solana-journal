@@ -91,7 +91,6 @@ export default function JournalDashboard() {
     <div className="space-y-6">
       {journalEntries.map((entry) => {
         const moodKey = getMoodKey(entry.mood);
-        console.log(entry.created_at);
 
         const mood = moodOptions.find(
           (m) => m.id.toLowerCase() === moodKey.toLowerCase()
@@ -141,7 +140,9 @@ export default function JournalDashboard() {
                     color: mood?.bgColor || "#F8F8FF",
                   }}
                 >
-                  {entry.created_at || new Date().toLocaleDateString()}
+                  {entry.createdAt
+                    ? new Date(entry.createdAt * 1000).toLocaleDateString()
+                    : new Date().toLocaleDateString()}
                 </span>
               </div>
 
