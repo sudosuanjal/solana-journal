@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
-
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { createJournalEntry, getProgram } from "@/utils/program";
 const moodOptions = [
   {
     id: "awesome",
@@ -47,9 +48,72 @@ const moodOptions = [
 ];
 
 export default function JournalEntryForm() {
+  const { connection } = useConnection();
+  const { publicKey, signAllTransactions, signTransaction, connected, wallet } =
+    useWallet();
+
   const [selectedMood, setSelectedMood] = useState<string>("");
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [status, setStatus] = useState("");
+
+  const handleCreate = useCallback(async () => {
+    if (!publicKey || !connected || !signTransaction || !signAllTransactions) {
+      setStatus("wallet not connected or missing rewuired methods");
+      return;
+    }
+    if (!title.trim() || !message.trim()) {
+      setStatus("fill in both tittle and messasge");
+      return;
+    }
+    if (!selectedMood) {
+      setStatus("Please select a mood");
+      return;
+    }
+    const mood = moodOptions.find((mood) => mood.id === selectedMood)?.label;
+    if (!mood) {
+      setStatus("Selected mood is invalid");
+      return;
+    }
+
+    setIsLoading(true);
+    setStatus("creating journal entry");
+    try {
+      const walletAdapter = {
+        publicKey,
+        signAllTransactions,
+        signTransaction,
+      };
+
+      const program = getProgram(connection, walletAdapter as any);
+
+      const signature = await createJournalEntry(
+        program,
+        title,
+        message,
+        mood,
+        publicKey
+      );
+      setStatus(`jorunal entry created succefully! Transaction: ${signature}`);
+      setTitle("");
+      setMessage("");
+    } catch (error: any) {
+      setStatus(`Error: ${error.message || "failed to create joournal"}`);
+    } finally {
+      setIsLoading(false);
+      setStatus("");
+    }
+  }, [
+    connection,
+    publicKey,
+    signAllTransactions,
+    signTransaction,
+    title,
+    message,
+    selectedMood,
+    connected,
+  ]);
 
   return (
     <div className="space-y-6 flex flex-col h-full">
@@ -135,9 +199,19 @@ export default function JournalEntryForm() {
         className="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-4 rounded-md text-base border-2 border-gray-900 transition-colors"
         size="lg"
         style={{}}
+        onClick={handleCreate}
       >
         Submit Journal
       </Button>
+      {status && (
+        <p
+          className={`text-sm ${
+            status.includes("Error") ? "text-red-600" : "text-green-600"
+          }`}
+        >
+          {status}
+        </p>
+      )}
     </div>
   );
 }
