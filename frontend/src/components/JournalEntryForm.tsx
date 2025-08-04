@@ -73,7 +73,6 @@ export default function JournalEntryForm() {
             <span
               className="text-base font-medium"
               style={{
-                fontFamily: "Kalam, cursive",
                 color: moodOptions[0].textColor,
               }}
             >
@@ -103,7 +102,6 @@ export default function JournalEntryForm() {
                 <span
                   className="text-sm font-medium"
                   style={{
-                    fontFamily: "Kalam, cursive",
                     color: mood.textColor,
                   }}
                 >
@@ -122,21 +120,21 @@ export default function JournalEntryForm() {
           onChange={(e) => setTitle(e.target.value)}
           className="w-full bg-white rounded-md p-4 text-gray-800 outline-none focus:ring-2 focus:ring-gray-900 placeholder-gray-500 border-2 border-gray-200 focus:border-gray-900 transition-colors"
           placeholder="Enter title..."
-          style={{ fontFamily: "Kalam, cursive" }}
+          style={{}}
         />
         <textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           className="w-full bg-white rounded-md p-4 text-gray-800 outline-none focus:ring-2 focus:ring-gray-900 placeholder-gray-500 resize-none border-2 border-gray-200 focus:border-gray-900 transition-colors flex-grow"
           placeholder="Enter your message..."
-          style={{ fontFamily: "Kalam, cursive" }}
+          style={{}}
         />
       </div>
 
       <Button
         className="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-4 rounded-md text-base border-2 border-gray-900 transition-colors"
         size="lg"
-        style={{ fontFamily: "Kalam, cursive" }}
+        style={{}}
       >
         Submit Journal
       </Button>

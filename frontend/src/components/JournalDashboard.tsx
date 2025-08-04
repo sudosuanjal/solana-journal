@@ -136,7 +136,6 @@ export default function JournalDashboard() {
                 <span
                   className="text-sm font-medium"
                   style={{
-                    fontFamily: "Kalam, cursive",
                     color: mood?.bgColor || "#F8F8FF",
                   }}
                 >
@@ -161,8 +160,9 @@ export default function JournalDashboard() {
               <div
                 className="flex items-center gap-2 rounded-md px-4 py-2 border"
                 style={{
-                  backgroundColor: mood?.bgColor,
+                  backgroundColor: "rgba(255, 255, 255, 0.25)", // translucent white overlay
                   borderColor: mood?.borderColor,
+                  backdropFilter: "blur(4px)", // optional: for a soft frosted look
                 }}
               >
                 <span className="text-sm" style={{ color: mood?.textColor }}>
@@ -171,7 +171,6 @@ export default function JournalDashboard() {
                 <span
                   className="text-sm font-medium"
                   style={{
-                    fontFamily: "Kalam, cursive",
                     color: mood?.textColor,
                   }}
                 >
@@ -180,17 +179,11 @@ export default function JournalDashboard() {
               </div>
             </div>
 
-            <h2
-              className="text-xl font-bold leading-tight"
-              style={{ fontFamily: "Kalam, cursive" }}
-            >
+            <h2 className="text-xl font-bold leading-tight" style={{}}>
               {entry.title}
             </h2>
 
-            <p
-              className="text-sm leading-relaxed"
-              style={{ fontFamily: "Kalam, cursive" }}
-            >
+            <p className="text-sm leading-relaxed" style={{}}>
               {entry.message}
             </p>
           </div>

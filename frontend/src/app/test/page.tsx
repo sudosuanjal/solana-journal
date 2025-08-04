@@ -24,7 +24,7 @@ const CreateJournalPage = () => {
           const walletAdapter = {
             publicKey,
             signTransaction,
-            signAllTransactions,
+            signAllTransactions
           };
 
           const program = getProgram(connection, wallet?.adapter as any);
