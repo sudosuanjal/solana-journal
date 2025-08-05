@@ -9,6 +9,8 @@ export interface JournalEntry {
   title: string;
   message: string;
   mood: string;
+  createdAt: number;
+  updatedAt?: number;
 }
 
 export const getProgram = (connection: Connection, wallet: Wallet) => {
