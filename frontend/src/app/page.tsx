@@ -42,7 +42,7 @@ export default function LandingPage() {
       </div>
 
       {/* Rest of the content */}
-      <div className="pt-6">
+      <div className="pt-6 pb-6">
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid lg:grid-cols-3 gap-6 mb-16">
             <JournalEntryPreview />

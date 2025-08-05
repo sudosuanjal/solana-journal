@@ -73,8 +73,14 @@ export default function JournalDashboard() {
     try {
       const program = await getProgram(connection, wallet.adapter as any);
       const data = await getAllJournalEntries(program, publicKey);
-      setJournalEntries(data);
-      console.log(data);
+      const sortedData = data.sort((a, b) => {
+        const timeA = a.createdAt ?? 0;
+        const timeB = b.createdAt ?? 0;
+        return timeB - timeA;
+      });
+
+      setJournalEntries(sortedData);
+      console.log(sortedData);
     } catch (error) {
       console.error("Error fetching journal entries:", error);
     } finally {
