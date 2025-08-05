@@ -3,6 +3,12 @@ import { getAllJournalEntries, getProgram } from "@/utils/program";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { Calendar } from "lucide-react";
 import { useEffect, useState } from "react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 const moodOptions = [
   {
@@ -73,6 +79,11 @@ export default function JournalDashboard() {
     return moodObj ? Object.keys(moodObj)[0] : "happy";
   }
 
+  function truncateMessage(message: string, maxLength: number = 50): string {
+    if (message.length <= maxLength) return message;
+    return message.substring(0, maxLength) + "...";
+  }
+
   useEffect(() => {
     if (publicKey && wallet) {
       fetchEntries();
@@ -88,107 +99,114 @@ export default function JournalDashboard() {
   }
 
   return (
-    <div className="space-y-6">
-      {journalEntries.map((entry) => {
-        const moodKey = getMoodKey(entry.mood);
+    <div className="space-y-4">
+      <Accordion type="multiple" className="w-full space-y-4">
+        {journalEntries.map((entry) => {
+          const moodKey = getMoodKey(entry.mood);
+          const mood = moodOptions.find(
+            (m) => m.id.toLowerCase() === moodKey.toLowerCase()
+          );
 
-        const mood = moodOptions.find(
-          (m) => m.id.toLowerCase() === moodKey.toLowerCase()
-        );
+          const cardStyles = {
+            backgroundColor: mood?.bgColor || "#FFFFFF",
+            borderColor: mood?.borderColor || "#E5E7EB",
+            color: mood?.textColor || "#1F2937",
+          };
 
-        const cardStyles = {
-          backgroundColor: mood?.bgColor || "#FFFFFF",
-          borderColor: mood?.borderColor || "#E5E7EB",
-          color: mood?.textColor || "#1F2937",
-        };
+          return (
+            <AccordionItem
+              key={entry.publicKey.toString()}
+              value={entry.publicKey.toString()}
+              className="rounded-md border-2 shadow-sm transition-colors overflow-hidden"
+              style={cardStyles}
+            >
+              <AccordionTrigger className="px-6 py-4 hover:no-underline">
+                <div className="flex flex-col items-start w-full space-y-3">
+                  <div className="flex items-center gap-3 w-full">
+                    {/* Date Badge */}
+                    <div
+                      className="flex items-center gap-2 rounded-md px-3 py-1.5 border text-xs"
+                      style={{
+                        backgroundColor: mood?.textColor || "#3E3B39",
+                        borderColor: mood?.borderColor || "#D1D5DB",
+                      }}
+                    >
+                      <Calendar
+                        className="w-3 h-3"
+                        style={{ color: mood?.bgColor || "#F8F8FF" }}
+                      />
+                      <span
+                        className="font-medium"
+                        style={{
+                          color: mood?.bgColor || "#F8F8FF",
+                        }}
+                      >
+                        {entry.createdAt
+                          ? new Date(entry.createdAt * 1000).toLocaleDateString(
+                              "en-US",
+                              {
+                                year: "numeric",
+                                month: "short",
+                                day: "numeric",
+                              }
+                            )
+                          : new Date().toLocaleDateString("en-US", {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                            })}
+                      </span>
+                    </div>
 
-        const moodBadgeStyles = {
-          backgroundColor: "#FFFFFF",
-          borderColor: mood?.borderColor || "#D1D5DB",
-          color: "#1F2937",
-        };
+                    {/* Mood Badge */}
+                    <div
+                      className="flex items-center gap-2 rounded-md px-3 py-1.5 border text-xs"
+                      style={{
+                        backgroundColor: "rgba(255, 255, 255, 0.25)",
+                        borderColor: mood?.borderColor,
+                        backdropFilter: "blur(4px)",
+                      }}
+                    >
+                      <span style={{ color: mood?.textColor }}>
+                        {entry.moodEmoji || mood?.emoji || "😊"}
+                      </span>
+                      <span
+                        className="font-medium"
+                        style={{
+                          color: mood?.textColor,
+                        }}
+                      >
+                        {mood?.label || "Happy"}
+                      </span>
+                    </div>
+                  </div>
 
-        const dateBadgeStyles = {
-          backgroundColor: "#FFFFFF",
-          borderColor: "#D1D5DB",
-          color: "#4B5563",
-        };
+                  <div className="text-left w-full">
+                    <h2 className="text-lg font-bold leading-tight mb-2">
+                      {entry.title}
+                    </h2>
+                    <p className="text-sm leading-relaxed opacity-75">
+                      {truncateMessage(entry.message)}
+                    </p>
+                  </div>
+                </div>
+              </AccordionTrigger>
 
-        return (
-          <div
-            key={entry.publicKey.toString()}
-            className="rounded-md p-6 space-y-4 shadow-sm border-2 transition-colors"
-            style={cardStyles}
-          >
-            <div className="flex items-center gap-3">
-              {/* Date Badge themed by mood */}
-              <div
-                className="flex items-center gap-2 rounded-md px-4 py-2 border"
-                style={{
-                  backgroundColor: mood?.textColor || "#3E3B39",
-                  borderColor: mood?.borderColor || "#D1D5DB",
-                }}
-              >
-                <Calendar
-                  className="w-4 h-4"
-                  style={{ color: mood?.bgColor || "#F8F8FF" }}
-                />
-                <span
-                  className="text-sm font-medium"
-                  style={{
-                    color: mood?.bgColor || "#F8F8FF",
-                  }}
+              <AccordionContent className="px-6 pb-4">
+                <div
+                  className="pt-2 border-t border-opacity-20"
+                  style={{ borderColor: mood?.borderColor }}
                 >
-                  {entry.createdAt
-                    ? new Date(entry.createdAt * 1000).toLocaleDateString(
-                        "en-US",
-                        {
-                          year: "numeric",
-                          month: "short",
-                          day: "numeric",
-                        }
-                      )
-                    : new Date().toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                      })}
-                </span>
-              </div>
-
-              {/* Mood Badge themed by mood */}
-              <div
-                className="flex items-center gap-2 rounded-md px-4 py-2 border"
-                style={{
-                  backgroundColor: "rgba(255, 255, 255, 0.25)", // translucent white overlay
-                  borderColor: mood?.borderColor,
-                  backdropFilter: "blur(4px)", // optional: for a soft frosted look
-                }}
-              >
-                <span className="text-sm" style={{ color: mood?.textColor }}>
-                  {entry.moodEmoji || mood?.emoji || "😊"}
-                </span>
-                <span
-                  className="text-sm font-medium"
-                  style={{
-                    color: mood?.textColor,
-                  }}
-                >
-                  {mood?.label || "Happy"}
-                </span>
-              </div>
-            </div>
-
-            <h2 className="text-xl font-bold leading-tight" style={{}}>
-              {entry.title}
-            </h2>
-
-            <p className="text-sm leading-relaxed" style={{}}>
-              {entry.message}
-            </p>
-          </div>
-        );
-      })}
+                  <h3 className="text-sm font-semibold mb-2 opacity-75">
+                    Full Message:
+                  </h3>
+                  <p className="text-sm leading-relaxed">{entry.message}</p>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          );
+        })}
+      </Accordion>
     </div>
   );
 }
