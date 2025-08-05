@@ -3,8 +3,15 @@
 import { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { createJournalEntry, getProgram } from "@/utils/program";
+import {
+  createJournalEntry,
+  getProgram,
+  getJournalEntryPDA,
+} from "@/utils/program";
 import { toast } from "sonner";
+import { PublicKey } from "@solana/web3.js";
+import { useJournalStore } from "@/store/journalStore";
+
 const moodOptions = [
   {
     id: "awesome",
@@ -52,7 +59,7 @@ export default function JournalEntryForm() {
   const { connection } = useConnection();
   const { publicKey, signAllTransactions, signTransaction, connected, wallet } =
     useWallet();
-
+  const { addEntry, fetchEntries } = useJournalStore();
   const [selectedMood, setSelectedMood] = useState<string>("");
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
@@ -134,14 +141,32 @@ export default function JournalEntryForm() {
         publicKey
       );
 
+      // Construct new entry
+      const [journalEntryPDA] = getJournalEntryPDA(title, publicKey);
+      const newEntry = {
+        owner: publicKey,
+        title,
+        message,
+        mood: { [mood.toLowerCase()]: {} },
+        createdAt: Math.floor(Date.now() / 1000),
+        publicKey: journalEntryPDA,
+        moodEmoji: moodOptions.find((m) => m.id === selectedMood)?.emoji,
+      };
+
+      // Add entry to store
+      addEntry(newEntry);
+
+      // Optionally re-fetch to ensure consistency (comment out if using local append only)
+      // await fetchEntries(connection, publicKey, wallet);
+
       setTitle("");
       setMessage("");
+      setSelectedMood("");
       setStatus(
         `Journal entry created successfully! Transaction: ${signature}`
       );
 
-      toast.dismiss(loadingToastId); // Remove spinner
-
+      toast.dismiss(loadingToastId);
       toast("Entry Created!", {
         description: "Journal saved on Solana Devnet.",
         action: {
@@ -172,12 +197,14 @@ export default function JournalEntryForm() {
     message,
     selectedMood,
     connected,
+    addEntry,
+    fetchEntries,
+    wallet,
   ]);
 
   return (
     <div className="space-y-6 flex flex-col h-full">
       <div className="grid grid-cols-2 gap-4">
-        {/* Awesome mood on the left */}
         <div
           key={moodOptions[0].id}
           className={`rounded-md p-4 cursor-pointer transition-all duration-200 hover:scale-105 border-2 flex items-center justify-center row-span-2 ${
@@ -203,8 +230,6 @@ export default function JournalEntryForm() {
             </span>
           </div>
         </div>
-
-        {/* Other moods on the right in a 2x2 grid */}
         <div className="grid grid-cols-2 gap-4">
           {moodOptions.slice(1).map((mood) => (
             <div
@@ -235,7 +260,6 @@ export default function JournalEntryForm() {
           ))}
         </div>
       </div>
-
       <div className="space-y-4 flex-grow flex flex-col">
         <input
           type="text"
@@ -243,24 +267,21 @@ export default function JournalEntryForm() {
           onChange={(e) => setTitle(e.target.value)}
           className="w-full bg-white rounded-md p-4 text-gray-800 outline-none focus:ring-2 focus:ring-gray-900 placeholder-gray-500 border-2 border-gray-200 focus:border-gray-900 transition-colors"
           placeholder="Enter title..."
-          style={{}}
         />
         <textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           className="w-full bg-white rounded-md p-4 text-gray-800 outline-none focus:ring-2 focus:ring-gray-900 placeholder-gray-500 resize-none border-2 border-gray-200 focus:border-gray-900 transition-colors flex-grow"
           placeholder="Enter your message..."
-          style={{}}
         />
       </div>
-
       <Button
         className="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-4 rounded-md text-base border-2 border-gray-900 transition-colors"
         size="lg"
-        style={{}}
         onClick={handleCreate}
+        disabled={isLoading}
       >
-        Submit Journal
+        {isLoading ? "Submitting..." : "Submit Journal"}
       </Button>
     </div>
   );
