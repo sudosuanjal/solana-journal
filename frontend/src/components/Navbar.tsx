@@ -21,8 +21,8 @@ export default function NavBar() {
     : "Connect Wallet";
 
   return (
-    <div className="w-full p-4 fixed top-0 left-0 z-10 bg-[#FFF9E5]">
-      <nav className="w-full bg-white border-2 border-gray-900 rounded-md px-8 py-4 flex items-center justify-between">
+    <div className="w-full p-4 fixed top-0 left-0 z-10 ">
+      <nav className="w-full bg-white border-2 border-gray-900 rounded-md px-8 py-4 flex items-center justify-between z-50">
         <div className="flex items-center gap-2">
           <h1 className="text-2xl font-bold text-gray-900">
             <Link href={"/"}>Journl</Link>
