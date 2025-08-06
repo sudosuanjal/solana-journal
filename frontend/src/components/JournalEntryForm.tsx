@@ -9,7 +9,6 @@ import {
   getJournalEntryPDA,
 } from "@/utils/program";
 import { toast } from "sonner";
-import { PublicKey } from "@solana/web3.js";
 import { useJournalStore } from "@/store/journalStore";
 
 const moodOptions = [

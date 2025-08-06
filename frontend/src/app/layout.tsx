@@ -8,7 +8,7 @@ import { Toaster } from "@/components/ui/sonner";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "ChainDiary - Your Moods, Secured on Solana",
+  title: "Journl - Your Moods, Secured on Solana",
   description:
     "A revolutionary web3 journal app built on Solana blockchain. From awesome to terrible, your moods now have a ledger. Secure, immutable, and decentralized journaling.",
   keywords: [
@@ -19,17 +19,17 @@ export const metadata: Metadata = {
     "Solana dApp",
     "crypto journal",
   ],
-  authors: [{ name: "ChainDiary Team" }],
+  authors: [{ name: "Journl Team" }],
   openGraph: {
-    title: "ChainDiary - Your Moods, Secured on Solana",
+    title: "Journl - Your Moods, Secured on Solana",
     description: "Revolutionary web3 journal app on Solana blockchain",
-    url: "https://chaindiary.app",
-    siteName: "ChainDiary",
+    url: "https://Journl.app",
+    siteName: "Journl",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "ChainDiary - Your Moods, Secured on Solana",
+    title: "Journl - Your Moods, Secured on Solana",
     description: "Revolutionary web3 journal app on Solana blockchain",
   },
 };

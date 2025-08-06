@@ -10,7 +10,18 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
+  // Extend default Next.js + TypeScript config
   ...compat.extends("next/core-web-vitals", "next/typescript"),
+
+  // Override or disable rules
+  {
+    files: ["**/*.ts", "**/*.tsx"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-unused-vars": "warn", // optional: show warning instead of error
+      "react/no-unescaped-entities": "off", // for `'` or `’` issues
+    },
+  },
 ];
 
 export default eslintConfig;

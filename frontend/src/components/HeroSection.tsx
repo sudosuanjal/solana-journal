@@ -18,7 +18,7 @@ const HeroSection: React.FC = () => {
 
         <div className="flex flex-wrap justify-center gap-4 mb-6">
           <a
-            href="https://www.producthunt.com/products/chaindiary"
+            href="https://www.producthunt.com/products/Journl"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 px-5 py-2.5 border-2 border-gray-900 rounded-md bg-white hover:bg-gray-100 transition-all duration-200 hover:scale-105"

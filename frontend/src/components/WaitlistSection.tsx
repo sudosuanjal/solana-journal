@@ -17,11 +17,12 @@ const WaitlistSection: React.FC = () => {
     try {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       toast.success(
-        "Thanks for joining! We'll notify you when ChainDiary hits mainnet."
+        "Thanks for joining! We'll notify you when Journl hits mainnet."
       );
       setEmail("");
     } catch (error) {
       toast.error("Something went wrong. Please try again.");
+      console.log(error);
     } finally {
       setIsSubmitting(false);
     }
@@ -33,8 +34,8 @@ const WaitlistSection: React.FC = () => {
         Ready for Mainnet?
       </h2>
       <p className="text-gray-600 mb-6 max-w-md mx-auto">
-        Be the first to know when ChainDiary launches on Solana mainnet. Join
-        our waitlist for exclusive updates.
+        Be the first to know when Journl launches on Solana mainnet. Join our
+        waitlist for exclusive updates.
       </p>
 
       <form onSubmit={handleWaitlistSubmit} className="max-w-md mx-auto">

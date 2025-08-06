@@ -22,7 +22,7 @@ const Footer: React.FC = () => {
           Twitter
         </a>
         <a
-          href="https://www.producthunt.com/products/chaindiary"
+          href="https://www.producthunt.com/products/Journl"
           target="_blank"
           rel="noopener noreferrer"
           className="text-gray-600 hover:text-gray-900 transition-colors"

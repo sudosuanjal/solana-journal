@@ -4,7 +4,7 @@ const WhyChainDiary: React.FC = () => {
   return (
     <div className="bg-white border-2 border-gray-900 rounded-md p-8 mb-16">
       <h2 className="text-3xl font-bold text-gray-900 text-center mb-8">
-        Why ChainDiary Matters in Web3
+        Why Journl Matters in Web3
       </h2>
 
       <div className="grid md:grid-cols-3 gap-6 mb-8">
@@ -13,7 +13,7 @@ const WhyChainDiary: React.FC = () => {
             <Shield className="w-8 h-8 text-gray-900" />
           </div>
           <h3 className="font-semibold text-gray-900 mb-2">
-            Immutable & Secure
+            Immutable &amp; Secure
           </h3>
           <p className="text-sm text-gray-600">
             Your journal entries are cryptographically protected and securely
@@ -46,10 +46,10 @@ const WhyChainDiary: React.FC = () => {
 
       <div className="bg-gray-50 border-2 border-gray-900 rounded-md p-6">
         <p className="text-gray-900 leading-relaxed font-[kalam]">
-          ChainDiary pioneers personal journaling in the decentralized era by
+          Journl pioneers personal journaling in the decentralized era by
           leveraging Solana's high-performance blockchain. Unlike traditional
           journal apps that store your intimate thoughts on centralized servers,
-          ChainDiary ensures your entries are securely recorded, providing a
+          Journl ensures your entries are securely recorded, providing a
           verifiable history of your thoughts that only you control through your
           Solana wallet. With Solana's scalability and eco-friendly consensus,
           you can journal daily without worrying about high fees or slow
