@@ -12,6 +12,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
+    "traceResolution": true,
     "incremental": true,
     "maxNodeModuleJsDepth": 1000,
     "plugins": [

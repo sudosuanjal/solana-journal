@@ -7,11 +7,19 @@ import {
   createJournalEntry,
   getProgram,
   getJournalEntryPDA,
+  Mood,
 } from "@/utils/program";
 import { toast } from "sonner";
 import { useJournalStore } from "@/store/journalStore";
 
-const moodOptions = [
+const moodOptions: {
+  id: Mood;
+  label: string;
+  emoji: string;
+  bgColor: string;
+  textColor: string;
+  borderColor: string;
+}[] = [
   {
     id: "awesome",
     label: "Awesome",
@@ -59,7 +67,7 @@ export default function JournalEntryForm() {
   const { publicKey, signAllTransactions, signTransaction, connected, wallet } =
     useWallet();
   const { addEntry, fetchEntries } = useJournalStore();
-  const [selectedMood, setSelectedMood] = useState<string>("");
+  const [selectedMood, setSelectedMood] = useState<Mood | "">("");
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -105,20 +113,6 @@ export default function JournalEntryForm() {
       return;
     }
 
-    const mood = moodOptions.find((m) => m.id === selectedMood)?.label;
-    if (!mood) {
-      const msg = "Selected mood is invalid";
-      setStatus(msg);
-      toast("Invalid Mood", {
-        description: msg,
-        action: {
-          label: "Clear",
-          onClick: () => setStatus(""),
-        },
-      });
-      return;
-    }
-
     const loadingToastId = toast.loading("Creating journal entry...");
     setIsLoading(true);
     setStatus("creating journal entry");
@@ -131,12 +125,13 @@ export default function JournalEntryForm() {
       };
 
       const program = getProgram(connection, walletAdapter as any);
+      console.log("progam", program.account);
 
       const signature = await createJournalEntry(
         program,
         title,
         message,
-        mood,
+        selectedMood, // Pass the Mood type directly
         publicKey
       );
 
@@ -146,7 +141,7 @@ export default function JournalEntryForm() {
         owner: publicKey,
         title,
         message,
-        mood: { [mood.toLowerCase()]: {} },
+        mood: selectedMood, // Use string literal instead of object
         createdAt: Math.floor(Date.now() / 1000),
         publicKey: journalEntryPDA,
         moodEmoji: moodOptions.find((m) => m.id === selectedMood)?.emoji,
