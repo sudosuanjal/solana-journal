@@ -26,14 +26,14 @@ interface JournalState {
 
 export const useJournalStore = create<JournalState>((set) => ({
   journalEntries: [],
-  loading: true,
+  loading: false,
   fetchEntries: async (
     connection: Connection,
     publicKey: PublicKey | null,
     wallet: any
   ) => {
     if (!publicKey || !wallet?.adapter) {
-      set({ loading: false });
+      set({ journalEntries: [], loading: false });
       return;
     }
     set({ loading: true });
@@ -49,6 +49,7 @@ export const useJournalStore = create<JournalState>((set) => ({
       set({ journalEntries: sortedData });
     } catch (error) {
       console.error("Error fetching journal entries:", error);
+      set({ journalEntries: [], loading: false });
     } finally {
       set({ loading: false });
     }

@@ -16,7 +16,14 @@ require("@solana/wallet-adapter-react-ui/styles.css");
 
 const AppWalletProvider = ({ children }: { children: React.ReactNode }) => {
   const network = WalletAdapterNetwork.Devnet;
-  const endpoint = useMemo(() => clusterApiUrl(network), [network]);
+  const endpoint = useMemo(() => {
+    try {
+      return clusterApiUrl(network);
+    } catch (error) {
+      console.error("Failed to get cluster API URL:", error);
+      return "https://api.devnet.solana.com";
+    }
+  }, [network]);
   const wallets = useMemo(
     () => [new PhantomWalletAdapter(), new SolflareWalletAdapter()],
     [network]

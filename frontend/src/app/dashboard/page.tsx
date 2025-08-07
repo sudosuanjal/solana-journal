@@ -13,9 +13,7 @@ export default function DashboardPage() {
   const fetchEntries = useJournalStore((state) => state.fetchEntries);
 
   useEffect(() => {
-    if (publicKey && wallet) {
-      fetchEntries(connection, publicKey, wallet);
-    }
+    fetchEntries(connection, publicKey, wallet);
   }, [publicKey, wallet, connection, fetchEntries]);
 
   return (
