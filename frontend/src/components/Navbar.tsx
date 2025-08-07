@@ -4,7 +4,6 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import Link from "next/link";
 import { toast } from "sonner";
-import { useEffect } from "react";
 
 export default function NavBar() {
   const { publicKey, connecting, disconnecting, disconnect, connected } =
