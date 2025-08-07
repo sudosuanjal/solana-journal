@@ -15,7 +15,7 @@ export interface JournalEntry {
 
 export const getProgram = (connection: Connection, wallet: Wallet) => {
   const provider = new AnchorProvider(connection, wallet, {});
-  return new Program(idl as any, provider);
+  return new Program(idl as Journal, provider);
 };
 
 export function getJournalEntryPDA(title: string, owner: PublicKey) {
