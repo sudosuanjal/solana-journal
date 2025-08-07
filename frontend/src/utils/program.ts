@@ -32,12 +32,11 @@ export async function createJournalEntry(
   mood: string,
   owner: PublicKey
 ) {
-  console.log("mood", mood);
-
   const [journalEntryPDA] = getJournalEntryPDA(title, owner);
+  const moodLower = mood.toLowerCase();
 
   return await program.methods
-    .createJournalEntry(title, message, { [mood.toLowerCase()]: {} })
+    .createJournalEntry(title, message, { [moodLower]: {} })
     .accounts({
       journalEntry: journalEntryPDA,
       owner,
