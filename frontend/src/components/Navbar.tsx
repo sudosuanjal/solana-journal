@@ -6,8 +6,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 
 export default function NavBar() {
-  const { publicKey, connecting, disconnecting, disconnect, connected } =
-    useWallet();
+  const { publicKey, connecting, disconnecting, disconnect } = useWallet();
   const { setVisible } = useWalletModal();
 
   const handleWalletClick = async () => {
@@ -23,7 +22,6 @@ export default function NavBar() {
       console.error("Wallet disconnection error:", error);
     }
   };
-  toast;
 
   const displayAddress = publicKey
     ? `${publicKey.toBase58().slice(0, 4)}...${publicKey.toBase58().slice(-4)}`
