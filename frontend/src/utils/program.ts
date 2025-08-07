@@ -26,7 +26,7 @@ export function getJournalEntryPDA(title: string, owner: PublicKey) {
 }
 
 export async function createJournalEntry(
-  program: Program<any>,
+  program: Program<Journal>,
   title: string,
   message: string,
   mood: string,
