@@ -260,6 +260,11 @@ export default function JournalDashboard() {
   );
 
   function getMoodKey(moodObj: any): string {
+    console.log("moodOBj: ", moodObj);
+
+    if (typeof moodObj === "string") {
+      return moodObj;
+    }
     return moodObj ? Object.keys(moodObj)[0] : "happy";
   }
 
