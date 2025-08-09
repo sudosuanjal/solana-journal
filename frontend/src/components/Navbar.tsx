@@ -4,6 +4,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import Link from "next/link";
 import { toast } from "sonner";
+import Image from "next/image";
 
 export default function NavBar() {
   const { publicKey, connecting, disconnecting, disconnect } = useWallet();
@@ -31,9 +32,15 @@ export default function NavBar() {
     <div className="w-full p-4 fixed top-0 left-0 z-10">
       <nav className="w-full bg-white border-2 border-gray-900 rounded-md px-8 py-4 flex items-center justify-between z-50">
         <div className="flex items-center gap-2">
-          <h1 className="text-2xl font-bold text-gray-900">
-            <Link href={"/"}>Journl</Link>
-          </h1>
+          <Link href="/" className="flex items-center gap-2">
+            <Image
+              src="/journllogo.png"
+              alt="Journl logo"
+              width={35}
+              height={35}
+            />
+            <h1 className="text-2xl font-bold text-gray-900">Journl</h1>
+          </Link>
           <p className="text-gray-600 text-base hidden md:block">
             from awesome to terrible, your moods now have a ledger
           </p>

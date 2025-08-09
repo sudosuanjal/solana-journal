@@ -11,6 +11,14 @@ export const metadata: Metadata = {
   title: "Journl - Your Moods, Secured on Solana",
   description:
     "A revolutionary web3 journal app built on Solana blockchain. From awesome to terrible, your moods now have a ledger. Secure, immutable, and decentralized journaling.",
+  icons: {
+    icon: [
+      { url: "/journllogo.png", type: "image/png" },
+      { url: "/journllogo.png", sizes: "32x32", type: "image/png" },
+      { url: "/journllogo.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: { url: "/journllogo.png" },
+  },
   keywords: [
     "Solana journal app",
     "web3 diary",
