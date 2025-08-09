@@ -5,7 +5,13 @@ import "./globals.css";
 import AppWalletProvider from "@/components/AppWalletProvider";
 import { Toaster } from "@/components/ui/sonner";
 
+// import localFont from "next/font/local";
+
 const inter = Inter({ subsets: ["latin"] });
+// const bryndanWrite = localFont({
+//   src: "../fonts/bryndan_write.woff2",
+//   variable: "--font-bryndan-write",
+// });
 
 export const metadata: Metadata = {
   title: "Journl - Your Moods, Secured on Solana",
