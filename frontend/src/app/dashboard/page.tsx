@@ -1,16 +1,37 @@
-import NavBar from "@/components/Navbar";
+"use client";
 
-export default function DashboardPlaceholder() {
+import JournalDashboard from "@/components/JournalDashboard";
+import JournalEntryForm from "@/components/JournalEntryForm";
+import NavBar from "@/components/Navbar";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { useEffect } from "react";
+import { useJournalStore } from "@/store/journalStore";
+
+export default function DashboardPage() {
+  const { connection } = useConnection();
+  const { wallet, publicKey } = useWallet();
+  const fetchEntries = useJournalStore((state) => state.fetchEntries);
+
+  useEffect(() => {
+    fetchEntries(connection, publicKey, wallet);
+  }, [publicKey, wallet, connection, fetchEntries]);
+
   return (
     <div className="h-screen bg-[#FFF9E5] flex flex-col">
       <NavBar />
-      <div className="flex flex-col items-center justify-center min-h-screen text-center p-6">
-        <h1 className="text-4xl font-bold mb-4">🚧 Under Maintenance</h1>
-        <p className="text-lg text-gray-600 max-w-md">
-          We’re working hard to bring you something awesome here. Check back
-          soon!
-        </p>
-      </div>
+      <main
+        className="flex-grow p-4 pt-16 overflow-hidden"
+        style={{ marginTop: "64px" }}
+      >
+        <div className="grid grid-cols-3 gap-4 h-full">
+          <div className="col-span-2 rounded-md border-2 border-gray-900 p-6 overflow-y-auto h-full bg-white">
+            <JournalDashboard />
+          </div>
+          <div className="col-span-1 rounded-md border-2 border-gray-900 p-6 overflow-y-auto h-full bg-white">
+            <JournalEntryForm />
+          </div>
+        </div>
+      </main>
     </div>
   );
 }
