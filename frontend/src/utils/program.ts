@@ -1,6 +1,7 @@
 import { Connection, PublicKey, SystemProgram } from "@solana/web3.js";
 import idl from "../idl/anchor_program.json";
 import { Idl, Program, AnchorProvider, Wallet } from "@coral-xyz/anchor";
+import { sha256 } from "js-sha256";
 
 // Define the program ID from the IDL
 const PROGRAM_ID = new PublicKey(idl.address);
@@ -33,10 +34,18 @@ export const getProgram = (connection: Connection, wallet: Wallet) => {
 
 export function getJournalEntryPDA(title: string, owner: PublicKey) {
   try {
-    return PublicKey.findProgramAddressSync(
-      [Buffer.from(title), owner.toBuffer()],
+    const titleBytes = new TextEncoder().encode(title);
+    const titleHash = Buffer.from(sha256(titleBytes), "hex");
+    console.log("title:", title);
+    console.log("titleBytes:", titleBytes);
+    console.log("titleHash:", titleHash.toString("hex"));
+    const [pda, bump] = PublicKey.findProgramAddressSync(
+      [titleHash, owner.toBuffer()],
       PROGRAM_ID
     );
+    console.log("PDA:", pda.toBase58());
+    console.log("bump:", bump);
+    return [pda, bump];
   } catch (error) {
     console.error("Error generating PDA:", error);
     throw new Error("Failed to generate journal entry PDA");
@@ -52,10 +61,12 @@ export async function createJournalEntry(
 ) {
   try {
     console.log("Creating journal entry with mood:", mood);
+    const titleBytes = new TextEncoder().encode(title);
+    const titleHash = Buffer.from(sha256(titleBytes), "hex");
     const [journalEntryPDA] = getJournalEntryPDA(title, owner);
 
     const txSignature = await program.methods
-      .createJournalEntry(title, message, { [mood]: {} })
+      .createJournalEntry(title, titleHash, message, { [mood]: {} })
       .accounts({
         journalEntry: journalEntryPDA,
         owner,
@@ -80,7 +91,7 @@ export async function getAllJournalEntries(
     const accounts = await program.account["journalEntryState"].all([
       {
         memcmp: {
-          offset: 8, // Adjust if your account structure has a different offset for owner
+          offset: 8,
           bytes: owner.toBase58(),
         },
       },

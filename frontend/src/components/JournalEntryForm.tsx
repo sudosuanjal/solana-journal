@@ -100,6 +100,32 @@ export default function JournalEntryForm() {
       return;
     }
 
+    if (new TextEncoder().encode(title).length > 256) {
+      const msg = "Title must not exceed 256 bytes";
+      setStatus(msg);
+      toast("Invalid Title", {
+        description: msg,
+        action: {
+          label: "Clear",
+          onClick: () => setStatus(""),
+        },
+      });
+      return;
+    }
+
+    if (new TextEncoder().encode(message).length > 2048) {
+      const msg = "Message must not exceed 2048 bytes";
+      setStatus(msg);
+      toast("Invalid Message", {
+        description: msg,
+        action: {
+          label: "Clear",
+          onClick: () => setStatus(""),
+        },
+      });
+      return;
+    }
+
     if (!selectedMood) {
       const msg = "Please select a mood";
       setStatus(msg);

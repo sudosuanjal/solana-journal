@@ -24,7 +24,7 @@ export type AnchorProgram = {
             seeds: [
               {
                 kind: "arg";
-                path: "title";
+                path: "titleHash";
               },
               {
                 kind: "account";
@@ -47,6 +47,12 @@ export type AnchorProgram = {
         {
           name: "title";
           type: "string";
+        },
+        {
+          name: "titleHash";
+          type: {
+            array: ["u8", 32];
+          };
         },
         {
           name: "message";
@@ -73,7 +79,7 @@ export type AnchorProgram = {
             seeds: [
               {
                 kind: "arg";
-                path: "title";
+                path: "titleHash";
               },
               {
                 kind: "account";
@@ -96,6 +102,12 @@ export type AnchorProgram = {
         {
           name: "title";
           type: "string";
+        },
+        {
+          name: "titleHash";
+          type: {
+            array: ["u8", 32];
+          };
         }
       ];
     },
@@ -110,7 +122,7 @@ export type AnchorProgram = {
             seeds: [
               {
                 kind: "arg";
-                path: "title";
+                path: "titleHash";
               },
               {
                 kind: "account";
@@ -133,6 +145,12 @@ export type AnchorProgram = {
         {
           name: "title";
           type: "string";
+        },
+        {
+          name: "titleHash";
+          type: {
+            array: ["u8", 32];
+          };
         },
         {
           name: "message";

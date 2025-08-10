@@ -18,7 +18,7 @@
             "seeds": [
               {
                 "kind": "arg",
-                "path": "title"
+                "path": "title_hash"
               },
               {
                 "kind": "account",
@@ -41,6 +41,12 @@
         {
           "name": "title",
           "type": "string"
+        },
+        {
+          "name": "title_hash",
+          "type": {
+            "array": ["u8", 32]
+          }
         },
         {
           "name": "message",
@@ -67,7 +73,7 @@
             "seeds": [
               {
                 "kind": "arg",
-                "path": "title"
+                "path": "title_hash"
               },
               {
                 "kind": "account",
@@ -90,6 +96,12 @@
         {
           "name": "title",
           "type": "string"
+        },
+        {
+          "name": "title_hash",
+          "type": {
+            "array": ["u8", 32]
+          }
         }
       ]
     },
@@ -104,7 +116,7 @@
             "seeds": [
               {
                 "kind": "arg",
-                "path": "title"
+                "path": "title_hash"
               },
               {
                 "kind": "account",
@@ -127,6 +139,12 @@
         {
           "name": "title",
           "type": "string"
+        },
+        {
+          "name": "title_hash",
+          "type": {
+            "array": ["u8", 32]
+          }
         },
         {
           "name": "message",
