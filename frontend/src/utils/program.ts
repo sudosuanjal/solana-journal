@@ -35,9 +35,12 @@ export const getProgram = (connection: Connection, wallet: Wallet) => {
 export function getJournalEntryPDA(title: string, owner: PublicKey) {
   try {
     const titleBytes = new TextEncoder().encode(title);
+    if (titleBytes.length > 100) {
+      throw new Error("Title exceeds 100 bytes");
+    }
     const titleHash = Buffer.from(sha256(titleBytes), "hex");
     console.log("title:", title);
-    console.log("titleBytes:", titleBytes);
+    console.log("titleBytes length:", titleBytes.length);
     console.log("titleHash:", titleHash.toString("hex"));
     const [pda, bump] = PublicKey.findProgramAddressSync(
       [titleHash, owner.toBuffer()],
@@ -48,7 +51,7 @@ export function getJournalEntryPDA(title: string, owner: PublicKey) {
     return [pda, bump];
   } catch (error) {
     console.error("Error generating PDA:", error);
-    throw new Error("Failed to generate journal entry PDA");
+    throw new Error(`Failed to generate journal entry PDA: ${error.message}`);
   }
 }
 
@@ -62,6 +65,13 @@ export async function createJournalEntry(
   try {
     console.log("Creating journal entry with mood:", mood);
     const titleBytes = new TextEncoder().encode(title);
+    if (titleBytes.length > 100) {
+      throw new Error("Title exceeds 100 bytes");
+    }
+    const messageBytes = new TextEncoder().encode(message);
+    if (messageBytes.length > 840) {
+      throw new Error("Message exceeds 840 bytes");
+    }
     const titleHash = Buffer.from(sha256(titleBytes), "hex");
     const [journalEntryPDA] = getJournalEntryPDA(title, owner);
 

@@ -100,8 +100,9 @@ export default function JournalEntryForm() {
       return;
     }
 
-    if (new TextEncoder().encode(title).length > 256) {
-      const msg = "Title must not exceed 256 bytes";
+    const titleBytes = new TextEncoder().encode(title);
+    if (titleBytes.length > 100) {
+      const msg = "Title must not exceed 100 bytes";
       setStatus(msg);
       toast("Invalid Title", {
         description: msg,
@@ -113,8 +114,9 @@ export default function JournalEntryForm() {
       return;
     }
 
-    if (new TextEncoder().encode(message).length > 2048) {
-      const msg = "Message must not exceed 2048 bytes";
+    const messageBytes = new TextEncoder().encode(message);
+    if (messageBytes.length > 840) {
+      const msg = "Message must not exceed 840 bytes";
       setStatus(msg);
       toast("Invalid Message", {
         description: msg,
@@ -151,33 +153,28 @@ export default function JournalEntryForm() {
       };
 
       const program = getProgram(connection, walletAdapter as any);
-      console.log("progam", program.account);
+      console.log("program", program.account);
 
       const signature = await createJournalEntry(
         program,
         title,
         message,
-        selectedMood, // Pass the Mood type directly
+        selectedMood,
         publicKey
       );
 
-      // Construct new entry
       const [journalEntryPDA] = getJournalEntryPDA(title, publicKey);
       const newEntry = {
         owner: publicKey,
         title,
         message,
-        mood: selectedMood, // Use string literal instead of object
+        mood: selectedMood,
         createdAt: Math.floor(Date.now() / 1000),
         publicKey: journalEntryPDA,
         moodEmoji: moodOptions.find((m) => m.id === selectedMood)?.emoji,
       };
 
-      // Add entry to store
       addEntry(newEntry);
-
-      // Optionally re-fetch to ensure consistency (comment out if using local append only)
-      // await fetchEntries(connection, publicKey, wallet);
 
       setTitle("");
       setMessage("");
@@ -203,10 +200,17 @@ export default function JournalEntryForm() {
       toast.dismiss(loadingToastId);
       toast("Error", {
         description: error.message || "Failed to create journal",
+        action: {
+          label: "Clear",
+          onClick: () => setStatus(""),
+        },
       });
+      console.error("Transaction error:", error);
+      if (error.logs) {
+        console.log("Transaction logs:", error.logs);
+      }
     } finally {
       setIsLoading(false);
-      setStatus("");
     }
   }, [
     connection,

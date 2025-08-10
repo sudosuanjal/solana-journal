@@ -9,7 +9,16 @@
   "instructions": [
     {
       "name": "create_journal_entry",
-      "discriminator": [48, 65, 201, 186, 25, 41, 127, 0],
+      "discriminator": [
+        48,
+        65,
+        201,
+        186,
+        25,
+        41,
+        127,
+        0
+      ],
       "accounts": [
         {
           "name": "journal_entry",
@@ -45,7 +54,10 @@
         {
           "name": "title_hash",
           "type": {
-            "array": ["u8", 32]
+            "array": [
+              "u8",
+              32
+            ]
           }
         },
         {
@@ -64,7 +76,16 @@
     },
     {
       "name": "delete_journal_entry",
-      "discriminator": [156, 50, 93, 5, 157, 97, 188, 114],
+      "discriminator": [
+        156,
+        50,
+        93,
+        5,
+        157,
+        97,
+        188,
+        114
+      ],
       "accounts": [
         {
           "name": "journal_entry",
@@ -100,14 +121,26 @@
         {
           "name": "title_hash",
           "type": {
-            "array": ["u8", 32]
+            "array": [
+              "u8",
+              32
+            ]
           }
         }
       ]
     },
     {
       "name": "update_journal_entry",
-      "discriminator": [113, 164, 49, 62, 43, 83, 194, 172],
+      "discriminator": [
+        113,
+        164,
+        49,
+        62,
+        43,
+        83,
+        194,
+        172
+      ],
       "accounts": [
         {
           "name": "journal_entry",
@@ -137,13 +170,12 @@
       ],
       "args": [
         {
-          "name": "title",
-          "type": "string"
-        },
-        {
           "name": "title_hash",
           "type": {
-            "array": ["u8", 32]
+            "array": [
+              "u8",
+              32
+            ]
           }
         },
         {
@@ -164,7 +196,16 @@
   "accounts": [
     {
       "name": "JournalEntryState",
-      "discriminator": [113, 86, 110, 124, 140, 14, 58, 66]
+      "discriminator": [
+        113,
+        86,
+        110,
+        124,
+        140,
+        14,
+        58,
+        66
+      ]
     }
   ],
   "types": [

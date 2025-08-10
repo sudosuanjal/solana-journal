@@ -143,10 +143,6 @@ export type AnchorProgram = {
       ];
       args: [
         {
-          name: "title";
-          type: "string";
-        },
-        {
           name: "titleHash";
           type: {
             array: ["u8", 32];
