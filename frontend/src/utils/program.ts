@@ -32,7 +32,10 @@ export const getProgram = (connection: Connection, wallet: Wallet) => {
   }
 };
 
-export function getJournalEntryPDA(title: string, owner: PublicKey) {
+export function getJournalEntryPDA(
+  title: string,
+  owner: PublicKey
+): [PublicKey, number] {
   try {
     const titleBytes = new TextEncoder().encode(title);
     if (titleBytes.length > 100) {

@@ -175,7 +175,6 @@ export default function JournalEntryForm() {
       };
 
       addEntry(newEntry);
-
       setTitle("");
       setMessage("");
       setSelectedMood("");
