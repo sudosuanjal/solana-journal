@@ -13,14 +13,13 @@ pub mod anchor_program {
         message: String,
         mood: Mood,
     ) -> Result<()> {
-        if title.as_bytes().len() > 256 {
+        if title.as_bytes().len() > 100 {
             return Err(anchor_lang::error::ErrorCode::ConstraintRaw.into());
         }
-        if message.as_bytes().len() > 2048 {
+        if message.as_bytes().len() > 840 {
             return Err(anchor_lang::error::ErrorCode::ConstraintRaw.into());
         }
 
-        // Verify the title_hash matches the title
         let computed_hash = anchor_lang::solana_program::hash::hash(title.as_bytes()).to_bytes();
         if computed_hash != title_hash {
             return Err(anchor_lang::error::ErrorCode::ConstraintRaw.into());
@@ -44,26 +43,15 @@ pub mod anchor_program {
 
     pub fn update_journal_entry(
         ctx: Context<UpdateEntry>,
-        title: String,
         title_hash: [u8; 32],
         message: String,
         mood: Mood,
     ) -> Result<()> {
-        if title.as_bytes().len() > 256 {
-            return Err(anchor_lang::error::ErrorCode::ConstraintRaw.into());
-        }
-        if message.as_bytes().len() > 2048 {
-            return Err(anchor_lang::error::ErrorCode::ConstraintRaw.into());
-        }
-
-        // Verify the title_hash matches the title
-        let computed_hash = anchor_lang::solana_program::hash::hash(title.as_bytes()).to_bytes();
-        if computed_hash != title_hash {
+        if message.as_bytes().len() > 840 {
             return Err(anchor_lang::error::ErrorCode::ConstraintRaw.into());
         }
 
         msg!("journal entry updated");
-        msg!("title: {}", title);
         msg!("message: {}", message);
         msg!("mood: {:?}", mood);
         msg!("title_hash: {:?}", title_hash);
@@ -81,7 +69,6 @@ pub mod anchor_program {
         title: String,
         title_hash: [u8; 32],
     ) -> Result<()> {
-        // Verify the title_hash matches the title
         let computed_hash = anchor_lang::solana_program::hash::hash(title.as_bytes()).to_bytes();
         if computed_hash != title_hash {
             return Err(anchor_lang::error::ErrorCode::ConstraintRaw.into());
@@ -122,7 +109,7 @@ pub struct CreateEntry<'info> {
         seeds = [title_hash.as_ref(), owner.key().as_ref()],
         bump,
         payer = owner,
-        space = 8 + 32 + 4 + 256 + 4 + 2048 + 1 + 8 + 9
+        space = 8 + 32 + 4 + 100 + 4 + 840 + 1 + 8 + 9
     )]
     pub journal_entry: Account<'info, JournalEntryState>,
     #[account(mut)]
@@ -131,13 +118,13 @@ pub struct CreateEntry<'info> {
 }
 
 #[derive(Accounts)]
-#[instruction(title: String, title_hash: [u8; 32], message: String, mood: Mood)]
+#[instruction(title_hash: [u8; 32], message: String, mood: Mood)]
 pub struct UpdateEntry<'info> {
     #[account(
         mut,
         seeds = [title_hash.as_ref(), owner.key().as_ref()],
         bump,
-        realloc = 8 + 32 + 4 + 256 + 4 + 2048 + 1 + 8 + 9,
+        realloc = 8 + 32 + 4 + 100 + 4 + 840 + 1 + 8 + 9,
         realloc::payer = owner,
         realloc::zero = true
     )]
