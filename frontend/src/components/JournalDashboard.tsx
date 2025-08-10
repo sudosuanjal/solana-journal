@@ -176,7 +176,7 @@ export default function JournalDashboard() {
                               </Button>
                             </TooltipTrigger>
                             <TooltipContent>
-                              <p>Delete Entry</p>
+                              <p>Delete Entry (coming soon!)</p>
                             </TooltipContent>
                           </Tooltip>
                           <Tooltip>
@@ -200,7 +200,7 @@ export default function JournalDashboard() {
                               </Button>
                             </TooltipTrigger>
                             <TooltipContent>
-                              <p>Edit Entry</p>
+                              <p>Edit Entry (coming soon!)</p>
                             </TooltipContent>
                           </Tooltip>
                           <Tooltip>
@@ -224,7 +224,7 @@ export default function JournalDashboard() {
                               </Button>
                             </TooltipTrigger>
                             <TooltipContent>
-                              <p>View Transaction on Chain</p>
+                              <p>View Transaction on Chain (coming soon!)</p>
                             </TooltipContent>
                           </Tooltip>
                         </div>
