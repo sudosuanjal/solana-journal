@@ -14,7 +14,7 @@ const Footer: React.FC = () => {
           GitHub
         </a>
         <a
-          href="https://twitter.com"
+          href="https://x.com/journldotfun"
           target="_blank"
           rel="noopener noreferrer"
           className="text-gray-600 hover:text-gray-900 transition-colors"

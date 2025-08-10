@@ -12,9 +12,7 @@ const WhyChainDiary: React.FC = () => {
           <div className="w-16 h-16 bg-gray-100 border-2 border-gray-900 rounded-md flex items-center justify-center mx-auto mb-4">
             <Shield className="w-8 h-8 text-gray-900" />
           </div>
-          <h3 className="font-semibold text-gray-900 mb-2">
-            Immutable &amp; Secure
-          </h3>
+          <h3 className="font-semibold text-gray-900 mb-2">Secure</h3>
           <p className="text-sm text-gray-600">
             Your journal entries are cryptographically protected and securely
             stored

@@ -12,8 +12,9 @@ const HeroSection: React.FC = () => {
           Your Moods, Secured on <span className="font-semibold">Solana</span>
         </p>
         <p className="text-base md:text-lg text-gray-600 mb-8">
-          From awesome to terrible, your moods now have a ledger. Revolutionary
-          web3 journaling with immutable memories.
+          From awesome to terrible, your moods now live on a blockchain journal.
+          <br />
+          Secure, Transparent, and Fully yours.
         </p>
 
         <div className="flex flex-wrap justify-center gap-4 mb-6">
