@@ -8,6 +8,8 @@ const WaitlistSection: React.FC = () => {
 
   const handleWaitlistSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("waitlist");
+
     if (!email) {
       toast.error("Please enter your email address");
       return;
@@ -15,14 +17,25 @@ const WaitlistSection: React.FC = () => {
 
     setIsSubmitting(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      toast.success(
-        "Thanks for joining! We'll notify you when Journl hits mainnet."
-      );
-      setEmail("");
+      const response = await fetch("/api/waitlist", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success(data.message);
+        setEmail("");
+      } else {
+        toast.error(data.error || "Something went wrong.");
+      }
     } catch (error) {
+      console.error("Error submitting email:", error);
       toast.error("Something went wrong. Please try again.");
-      console.log(error);
     } finally {
       setIsSubmitting(false);
     }
