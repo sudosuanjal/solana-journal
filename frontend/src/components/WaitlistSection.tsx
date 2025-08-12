@@ -52,7 +52,7 @@ const WaitlistSection: React.FC = () => {
       </p>
 
       <form onSubmit={handleWaitlistSubmit} className="max-w-md mx-auto">
-        <div className="flex gap-3">
+        <div className="flex flex-col md:flex-row gap-3">
           <div className="flex-1">
             <input
               type="email"
@@ -66,7 +66,7 @@ const WaitlistSection: React.FC = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="bg-gray-900 text-white px-6 py-3 border-2 border-gray-900 rounded-md font-semibold hover:bg-gray-800 transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            className="bg-gray-900 text-white px-6 py-3 border-2 border-gray-900 rounded-md font-semibold hover:bg-gray-800 transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {isSubmitting ? (
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
