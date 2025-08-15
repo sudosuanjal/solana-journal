@@ -17,7 +17,7 @@ const HeroSection: React.FC = () => {
           Secure, Transparent, and Fully yours.
         </p>
 
-        <div className="flex flex-wrap justify-center gap-4 mb-6">
+        {/* <div className="flex flex-wrap justify-center gap-4 mb-6">
           <a
             href="https://www.producthunt.com/products/Journl"
             target="_blank"
@@ -43,7 +43,7 @@ const HeroSection: React.FC = () => {
             <Github className="w-4 h-4" />
             <span className="font-medium text-gray-900">Star on GitHub</span>
           </a>
-        </div>
+        </div> */}
 
         <Link
           href="/dashboard"
