@@ -79,10 +79,7 @@ export default function JournalEntryForm() {
       setStatus(msg);
       toast("Wallet Error", {
         description: msg,
-        action: {
-          label: "Clear",
-          onClick: () => setStatus(""),
-        },
+        action: { label: "Clear", onClick: () => setStatus("") },
       });
       return;
     }
@@ -92,38 +89,31 @@ export default function JournalEntryForm() {
       setStatus(msg);
       toast("Missing Fields", {
         description: msg,
-        action: {
-          label: "Clear",
-          onClick: () => setStatus(""),
-        },
+        action: { label: "Clear", onClick: () => setStatus("") },
       });
       return;
     }
 
     const titleBytes = new TextEncoder().encode(title);
-    if (titleBytes.length > 100) {
-      const msg = "Title must not exceed 100 bytes";
+    if (titleBytes.length > 55) {
+      // Reduced to account for encryption
+      const msg = "Title must not exceed 55 bytes";
       setStatus(msg);
       toast("Invalid Title", {
         description: msg,
-        action: {
-          label: "Clear",
-          onClick: () => setStatus(""),
-        },
+        action: { label: "Clear", onClick: () => setStatus("") },
       });
       return;
     }
 
     const messageBytes = new TextEncoder().encode(message);
-    if (messageBytes.length > 840) {
-      const msg = "Message must not exceed 840 bytes";
+    if (messageBytes.length > 610) {
+      // Reduced to account for encryption
+      const msg = "Message must not exceed 610 bytes";
       setStatus(msg);
       toast("Invalid Message", {
         description: msg,
-        action: {
-          label: "Clear",
-          onClick: () => setStatus(""),
-        },
+        action: { label: "Clear", onClick: () => setStatus("") },
       });
       return;
     }
@@ -133,10 +123,7 @@ export default function JournalEntryForm() {
       setStatus(msg);
       toast("Mood Not Selected", {
         description: msg,
-        action: {
-          label: "Clear",
-          onClick: () => setStatus(""),
-        },
+        action: { label: "Clear", onClick: () => setStatus("") },
       });
       return;
     }
@@ -146,6 +133,22 @@ export default function JournalEntryForm() {
     setStatus("creating journal entry");
 
     try {
+      // Call encryption API
+      const response = await fetch("/api/encrypt", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, message }),
+      });
+
+      // Read the response body once
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(responseData.error || "Encryption failed");
+      }
+
+      const { encryptedTitle, encryptedMessage } = responseData;
+
       const walletAdapter = {
         publicKey,
         signAllTransactions,
@@ -157,17 +160,17 @@ export default function JournalEntryForm() {
 
       const signature = await createJournalEntry(
         program,
-        title,
-        message,
+        encryptedTitle,
+        encryptedMessage,
         selectedMood,
         publicKey
       );
 
-      const [journalEntryPDA] = getJournalEntryPDA(title, publicKey);
+      const [journalEntryPDA] = getJournalEntryPDA(encryptedTitle, publicKey);
       const newEntry = {
         owner: publicKey,
-        title,
-        message,
+        title: encryptedTitle,
+        message: encryptedMessage,
         mood: selectedMood,
         createdAt: Math.floor(Date.now() / 1000),
         publicKey: journalEntryPDA,
@@ -199,10 +202,7 @@ export default function JournalEntryForm() {
       toast.dismiss(loadingToastId);
       toast("Error", {
         description: error.message || "Failed to create journal",
-        action: {
-          label: "Clear",
-          onClick: () => setStatus(""),
-        },
+        action: { label: "Clear", onClick: () => setStatus("") },
       });
       console.error("Transaction error:", error);
       if (error.logs) {

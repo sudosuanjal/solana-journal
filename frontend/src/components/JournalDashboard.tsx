@@ -14,6 +14,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useJournalStore } from "@/store/journalStore";
+import { useEffect, useState } from "react";
 
 const moodOptions = [
   {
@@ -60,6 +61,57 @@ const moodOptions = [
 
 export default function JournalDashboard() {
   const { journalEntries, loading } = useJournalStore();
+  const [decryptedEntries, setDecryptedEntries] = useState<
+    { publicKey: string; title: string; message: string }[]
+  >([]);
+
+  useEffect(() => {
+    const decryptEntries = async () => {
+      const decrypted = await Promise.all(
+        journalEntries.map(async (entry) => {
+          try {
+            const response = await fetch("/api/decrypt", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                encryptedTitle: entry.title,
+                encryptedMessage: entry.message,
+              }),
+            });
+
+            if (!response.ok) {
+              throw new Error(
+                (await response.json()).error || "Decryption failed"
+              );
+            }
+
+            const { decryptedTitle, decryptedMessage } = await response.json();
+            return {
+              publicKey: entry.publicKey.toString(),
+              title: decryptedTitle,
+              message: decryptedMessage,
+            };
+          } catch (error) {
+            console.error(
+              "Decryption error for entry:",
+              entry.publicKey.toString(),
+              error
+            );
+            return {
+              publicKey: entry.publicKey.toString(),
+              title: "[Decryption Failed]",
+              message: "[Decryption Failed]",
+            };
+          }
+        })
+      );
+      setDecryptedEntries(decrypted);
+    };
+
+    if (journalEntries.length > 0) {
+      decryptEntries();
+    }
+  }, [journalEntries]);
 
   if (loading) {
     return (
@@ -89,6 +141,15 @@ export default function JournalDashboard() {
                 borderColor: mood?.borderColor || "#E5E7EB",
                 color: mood?.textColor || "#1F2937",
               };
+
+              const decryptedEntry = decryptedEntries.find(
+                (de) => de.publicKey === entry.publicKey.toString()
+              );
+
+              const displayTitle =
+                decryptedEntry?.title || "[Decryption Pending]";
+              const displayMessage =
+                decryptedEntry?.message || "[Decryption Pending]";
 
               return (
                 <AccordionItem
@@ -231,10 +292,10 @@ export default function JournalDashboard() {
                       </div>
                       <div className="text-left w-full">
                         <h2 className="text-lg font-bold leading-tight mb-2">
-                          {entry.title}
+                          {displayTitle}
                         </h2>
                         <p className="text-sm leading-relaxed opacity-75">
-                          {truncateMessage(entry.message)}
+                          {truncateMessage(displayMessage)}
                         </p>
                       </div>
                     </div>
@@ -247,7 +308,9 @@ export default function JournalDashboard() {
                       <h3 className="text-sm font-semibold mb-2 opacity-75">
                         Full Message:
                       </h3>
-                      <p className="text-sm leading-relaxed">{entry.message}</p>
+                      <p className="text-sm leading-relaxed">
+                        {displayMessage}
+                      </p>
                     </div>
                   </AccordionContent>
                 </AccordionItem>
@@ -260,8 +323,7 @@ export default function JournalDashboard() {
   );
 
   function getMoodKey(moodObj: any): string {
-    console.log("moodOBj: ", moodObj);
-
+    console.log("moodObj: ", moodObj);
     if (typeof moodObj === "string") {
       return moodObj;
     }

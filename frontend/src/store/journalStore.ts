@@ -4,9 +4,9 @@ import { getAllJournalEntries, getProgram } from "@/utils/program";
 
 interface JournalEntry {
   owner: PublicKey;
-  title: string;
-  message: string;
-  mood: any; // Replace with proper type if possible
+  title: string; // Encrypted title
+  message: string; // Encrypted message
+  mood: any;
   createdAt: number;
   updatedAt?: number;
   publicKey: PublicKey;

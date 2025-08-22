@@ -3,23 +3,19 @@ import idl from "../idl/anchor_program.json";
 import { Idl, Program, AnchorProvider, Wallet } from "@coral-xyz/anchor";
 import { sha256 } from "js-sha256";
 
-// Define the program ID from the IDL
 const PROGRAM_ID = new PublicKey(idl.address);
 
-// Define the Mood type based on the Anchor program's enum
 export type Mood = "awesome" | "happy" | "okay" | "bad" | "terrible";
 
-// Define the JournalEntry interface to match the Anchor program's account structure
 export interface JournalEntry {
   owner: PublicKey;
-  title: string;
-  message: string;
+  title: string; // Encrypted
+  message: string; // Encrypted
   mood: Mood;
   createdAt: number;
   updatedAt?: number;
 }
 
-// Type the IDL explicitly
 type JournalIDL = typeof idl & Idl;
 
 export const getProgram = (connection: Connection, wallet: Wallet) => {
