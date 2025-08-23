@@ -307,6 +307,16 @@ export default function DashboardPage() {
       journalEntries,
     ]);
 
+    const handleClear = () => {
+      setTitle("");
+      setMessage("");
+      setSelectedMood("");
+      if (editEntry) {
+        clearEditEntry(); // Reset edit mode if active
+        setOpen(false); // Close the sheet if in mobile view
+      }
+    };
+
     return (
       <div className="space-y-6 flex flex-col h-full pb-4">
         <div className="grid grid-cols-2 gap-4">
@@ -377,20 +387,30 @@ export default function DashboardPage() {
             placeholder="Enter your message..."
           />
         </div>
-        <Button
-          className="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-4 rounded-md text-base border-2 border-gray-900 transition-colors"
-          size="lg"
-          onClick={handleSubmit}
-          disabled={isLoading}
-        >
-          {isLoading
-            ? editEntry
-              ? "Updating..."
-              : "Submitting..."
-            : editEntry
-            ? "Update Journal"
-            : "Submit Journal"}
-        </Button>
+        <div className="flex gap-4">
+          <Button
+            className="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-4 rounded-md text-base border-2 border-gray-900 transition-colors flex-1"
+            size="lg"
+            onClick={handleSubmit}
+            disabled={isLoading}
+          >
+            {isLoading
+              ? editEntry
+                ? "Updating..."
+                : "Submitting..."
+              : editEntry
+              ? "Update Journal"
+              : "Submit Journal"}
+          </Button>
+          <Button
+            variant="outline"
+            className="w-full border-2 border-gray-900 text-gray-900 hover:bg-gray-100 font-medium py-4 rounded-md text-base flex-1"
+            onClick={handleClear}
+            disabled={isLoading}
+          >
+            Clear
+          </Button>
+        </div>
       </div>
     );
   };
