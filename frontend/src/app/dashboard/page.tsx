@@ -1,7 +1,7 @@
+// dashboard/page.ts
 "use client";
 
 import JournalDashboard from "@/components/JournalDashboard";
-import JournalEntryForm from "@/components/JournalEntryForm";
 import NavBar from "@/components/Navbar";
 import { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -20,9 +20,12 @@ import {
   createJournalEntry,
   getProgram,
   getJournalEntryPDA,
+  updateJournalEntry,
   Mood,
 } from "@/utils/program";
 import { toast } from "sonner";
+import { useDashboardStore } from "@/store/dashboardStore";
+import { sha256 } from "js-sha256";
 
 const moodOptions: {
   id: Mood;
@@ -78,7 +81,9 @@ export default function DashboardPage() {
   const { connection } = useConnection();
   const { publicKey, signAllTransactions, signTransaction, connected, wallet } =
     useWallet();
-  const { addEntry, fetchEntries } = useJournalStore();
+  const { addEntry, fetchEntries, journalEntries, updateEntry } =
+    useJournalStore();
+  const { editEntry, clearEditEntry } = useDashboardStore();
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -86,13 +91,15 @@ export default function DashboardPage() {
   }, [publicKey, wallet, connection, fetchEntries]);
 
   const FormContent = () => {
-    const [selectedMood, setSelectedMood] = useState<Mood | "">("");
-    const [title, setTitle] = useState("");
-    const [message, setMessage] = useState("");
+    const [selectedMood, setSelectedMood] = useState<Mood | "">(
+      (editEntry?.mood as Mood) || ""
+    );
+    const [title, setTitle] = useState(editEntry?.title || "");
+    const [message, setMessage] = useState(editEntry?.message || "");
     const [isLoading, setIsLoading] = useState(false);
     const [status, setStatus] = useState("");
 
-    const handleCreate = useCallback(async () => {
+    const handleSubmit = useCallback(async () => {
       if (
         !publicKey ||
         !connected ||
@@ -103,10 +110,7 @@ export default function DashboardPage() {
         setStatus(msg);
         toast("Wallet Error", {
           description: msg,
-          action: {
-            label: "Clear",
-            onClick: () => setStatus(""),
-          },
+          action: { label: "Clear", onClick: () => setStatus("") },
         });
         return;
       }
@@ -116,10 +120,7 @@ export default function DashboardPage() {
         setStatus(msg);
         toast("Missing Fields", {
           description: msg,
-          action: {
-            label: "Clear",
-            onClick: () => setStatus(""),
-          },
+          action: { label: "Clear", onClick: () => setStatus("") },
         });
         return;
       }
@@ -130,10 +131,7 @@ export default function DashboardPage() {
         setStatus(msg);
         toast("Invalid Title", {
           description: msg,
-          action: {
-            label: "Clear",
-            onClick: () => setStatus(""),
-          },
+          action: { label: "Clear", onClick: () => setStatus("") },
         });
         return;
       }
@@ -144,10 +142,7 @@ export default function DashboardPage() {
         setStatus(msg);
         toast("Invalid Message", {
           description: msg,
-          action: {
-            label: "Clear",
-            onClick: () => setStatus(""),
-          },
+          action: { label: "Clear", onClick: () => setStatus("") },
         });
         return;
       }
@@ -157,17 +152,18 @@ export default function DashboardPage() {
         setStatus(msg);
         toast("Mood Not Selected", {
           description: msg,
-          action: {
-            label: "Clear",
-            onClick: () => setStatus(""),
-          },
+          action: { label: "Clear", onClick: () => setStatus("") },
         });
         return;
       }
 
-      const loadingToastId = toast.loading("Creating journal entry...");
+      const loadingToastId = toast.loading(
+        editEntry ? "Updating journal entry..." : "Creating journal entry..."
+      );
       setIsLoading(true);
-      setStatus("creating journal entry");
+      setStatus(
+        editEntry ? "updating journal entry" : "creating journal entry"
+      );
 
       try {
         const walletAdapter = {
@@ -179,36 +175,96 @@ export default function DashboardPage() {
         const program = getProgram(connection, walletAdapter as any);
         console.log("program", program.account);
 
-        const signature = await createJournalEntry(
-          program,
-          title,
-          message,
-          selectedMood,
-          publicKey
-        );
+        let signature;
+        if (editEntry) {
+          // Update existing entry
+          const entry = journalEntries.find(
+            (e) => e.publicKey.toString() === editEntry.publicKey
+          )!;
+          const titleBytes = new TextEncoder().encode(entry.title); // Use encrypted title
+          const titleHash = Buffer.from(sha256(titleBytes), "hex");
+          console.log("Update titleHash:", titleHash.toString("hex")); // Debug log
 
-        const [journalEntryPDA] = getJournalEntryPDA(title, publicKey);
-        const newEntry = {
-          owner: publicKey,
-          title,
-          message,
-          mood: selectedMood,
-          createdAt: Math.floor(Date.now() / 1000),
-          publicKey: journalEntryPDA,
-          moodEmoji: moodOptions.find((m) => m.id === selectedMood)?.emoji,
-        };
+          // Re-encrypt the updated message
+          const encryptResponse = await fetch("/api/encrypt", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ title: editEntry.title, message }), // Use original encrypted title, new message
+          });
+          const encryptData = await encryptResponse.json();
+          if (!encryptResponse.ok) {
+            throw new Error(encryptData.error || "Encryption failed");
+          }
+          const { encryptedMessage } = encryptData;
 
-        addEntry(newEntry);
-        setTitle("");
-        setMessage("");
-        setSelectedMood("");
+          signature = await updateJournalEntry(
+            program,
+            titleHash,
+            encryptedMessage, // Use encrypted message
+            selectedMood,
+            publicKey
+          );
+          updateEntry({
+            ...entry,
+            message: encryptedMessage, // Update with encrypted message
+            mood: selectedMood,
+            updatedAt: Math.floor(Date.now() / 1000),
+          });
+          clearEditEntry();
+        } else {
+          // Create new entry
+          const response = await fetch("/api/encrypt", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ title, message }),
+          });
+
+          const responseData = await response.json();
+          if (!response.ok) {
+            throw new Error(responseData.error || "Encryption failed");
+          }
+
+          const { encryptedTitle, encryptedMessage } = responseData;
+          const titleBytes = new TextEncoder().encode(encryptedTitle);
+          const titleHash = Buffer.from(sha256(titleBytes), "hex");
+          console.log("Create titleHash:", titleHash.toString("hex")); // Debug log
+          signature = await createJournalEntry(
+            program,
+            encryptedTitle,
+            encryptedMessage,
+            selectedMood,
+            publicKey
+          );
+
+          const [journalEntryPDA] = getJournalEntryPDA(
+            encryptedTitle,
+            publicKey
+          );
+          const newEntry = {
+            owner: publicKey,
+            title: encryptedTitle,
+            message: encryptedMessage,
+            mood: selectedMood,
+            createdAt: Math.floor(Date.now() / 1000),
+            publicKey: journalEntryPDA,
+            moodEmoji: moodOptions.find((m) => m.id === selectedMood)?.emoji,
+          };
+
+          addEntry(newEntry);
+          setTitle("");
+          setMessage("");
+          setSelectedMood("");
+        }
+
         setStatus(
-          `Journal entry created successfully! Transaction: ${signature}`
+          `Journal entry ${
+            editEntry ? "updated" : "created"
+          } successfully! Transaction: ${signature}`
         );
 
         toast.dismiss(loadingToastId);
-        toast("Entry Created!", {
-          description: "Journal saved on Solana Devnet.",
+        toast(`Entry ${editEntry ? "Updated" : "Created"}!`, {
+          description: `Journal saved on Solana Devnet.`,
           action: {
             label: "View Tx",
             onClick: () =>
@@ -218,16 +274,13 @@ export default function DashboardPage() {
               ),
           },
         });
-        setOpen(false); // Close the sheet after successful submission
+        setOpen(false); // Close the sheet after submission
       } catch (error: any) {
-        setStatus(`Error: ${error.message || "Failed to create journal"}`);
+        setStatus(`Error: ${error.message || "Failed to submit journal"}`);
         toast.dismiss(loadingToastId);
         toast("Error", {
-          description: error.message || "Failed to create journal",
-          action: {
-            label: "Clear",
-            onClick: () => setStatus(""),
-          },
+          description: error.message || "Failed to submit journal",
+          action: { label: "Clear", onClick: () => setStatus("") },
         });
         console.error("Transaction error:", error);
         if (error.logs) {
@@ -248,12 +301,14 @@ export default function DashboardPage() {
       addEntry,
       fetchEntries,
       wallet,
+      editEntry,
+      updateEntry,
+      clearEditEntry,
+      journalEntries,
     ]);
 
     return (
       <div className="space-y-6 flex flex-col h-full pb-4">
-        {" "}
-        {/* Reduced bottom padding */}
         <div className="grid grid-cols-2 gap-4">
           <div
             key={moodOptions[0].id}
@@ -272,9 +327,7 @@ export default function DashboardPage() {
               <div className="text-4xl mb-4">{moodOptions[0].emoji}</div>
               <span
                 className="text-base font-medium"
-                style={{
-                  color: moodOptions[0].textColor,
-                }}
+                style={{ color: moodOptions[0].textColor }}
               >
                 {moodOptions[0].label}
               </span>
@@ -299,9 +352,7 @@ export default function DashboardPage() {
                   <div className="text-3xl mb-2">{mood.emoji}</div>
                   <span
                     className="text-sm font-medium"
-                    style={{
-                      color: mood.textColor,
-                    }}
+                    style={{ color: mood.textColor }}
                   >
                     {mood.label}
                   </span>
@@ -315,6 +366,7 @@ export default function DashboardPage() {
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
+            disabled={!!editEntry} // Disable title in edit mode
             className="w-full bg-white rounded-md p-4 text-gray-800 outline-none focus:ring-2 focus:ring-gray-900 placeholder-gray-500 border-2 border-gray-200 focus:border-gray-900 transition-colors"
             placeholder="Enter title..."
           />
@@ -328,10 +380,16 @@ export default function DashboardPage() {
         <Button
           className="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-4 rounded-md text-base border-2 border-gray-900 transition-colors"
           size="lg"
-          onClick={handleCreate}
+          onClick={handleSubmit}
           disabled={isLoading}
         >
-          {isLoading ? "Submitting..." : "Submit Journal"}
+          {isLoading
+            ? editEntry
+              ? "Updating..."
+              : "Submitting..."
+            : editEntry
+            ? "Update Journal"
+            : "Submit Journal"}
         </Button>
       </div>
     );
@@ -349,11 +407,10 @@ export default function DashboardPage() {
             <JournalDashboard />
           </div>
           <div className="hidden md:block rounded-md border-2 border-gray-900 p-6 overflow-y-auto h-full bg-white">
-            <JournalEntryForm />
+            <FormContent />
           </div>
         </div>
       </main>
-      {/* FAB at root level for mobile, hidden when Sheet is open */}
       <div
         className={`md:hidden fixed bottom-6 right-6 z-[2000] ${
           open ? "hidden" : ""
@@ -375,7 +432,9 @@ export default function DashboardPage() {
             className="h-[80vh] overflow-y-auto bg-white p-4"
           >
             <SheetHeader>
-              <SheetTitle>Create Journal Entry</SheetTitle>
+              <SheetTitle>
+                {editEntry ? "Edit Journal Entry" : "Create Journal Entry"}
+              </SheetTitle>
             </SheetHeader>
             <div className="mt-4">
               <FormContent />

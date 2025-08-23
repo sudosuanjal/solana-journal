@@ -1,3 +1,4 @@
+// JournalDashboard.tsx
 "use client";
 import { Calendar, CircleX, Pencil, SquareArrowOutUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,8 @@ import {
 } from "@/components/ui/tooltip";
 import { useJournalStore } from "@/store/journalStore";
 import { useEffect, useState } from "react";
+import { useDashboardStore } from "@/store/dashboardStore";
+import { Mood } from "@/utils/program";
 
 const moodOptions = [
   {
@@ -61,6 +64,7 @@ const moodOptions = [
 
 export default function JournalDashboard() {
   const { journalEntries, loading } = useJournalStore();
+  const { setEditEntry, clearEditEntry } = useDashboardStore();
   const [decryptedEntries, setDecryptedEntries] = useState<
     { publicKey: string; title: string; message: string }[]
   >([]);
@@ -70,6 +74,12 @@ export default function JournalDashboard() {
       const decrypted = await Promise.all(
         journalEntries.map(async (entry) => {
           try {
+            console.log(
+              "Attempting decryption for entry:",
+              entry.publicKey.toString()
+            );
+            console.log("Encrypted Title:", entry.title);
+            console.log("Encrypted Message:", entry.message);
             const response = await fetch("/api/decrypt", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -80,12 +90,21 @@ export default function JournalDashboard() {
             });
 
             if (!response.ok) {
-              throw new Error(
-                (await response.json()).error || "Decryption failed"
+              const errorData = await response.json();
+              console.error(
+                "Decryption failed:",
+                errorData.error || "Unknown error"
               );
+              throw new Error(errorData.error || "Decryption failed");
             }
 
             const { decryptedTitle, decryptedMessage } = await response.json();
+            console.log("Decrypted successfully:", {
+              encryptedTitle: entry.title,
+              decryptedTitle,
+              encryptedMessage: entry.message,
+              decryptedMessage,
+            });
             return {
               publicKey: entry.publicKey.toString(),
               title: decryptedTitle,
@@ -245,10 +264,22 @@ export default function JournalDashboard() {
                               <Button
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  console.log(
-                                    "Update entry:",
-                                    entry.publicKey.toString()
-                                  );
+                                  const currentEntry = journalEntries.find(
+                                    (item) =>
+                                      item.publicKey.toString() ===
+                                      entry.publicKey.toString()
+                                  )!;
+                                  const decryptedEntry = decryptedEntries.find(
+                                    (de) =>
+                                      de.publicKey ===
+                                      entry.publicKey.toString()
+                                  )!;
+                                  setEditEntry({
+                                    publicKey: entry.publicKey.toString(),
+                                    title: decryptedEntry.title, // Use decrypted title for display
+                                    message: decryptedEntry.message,
+                                    mood: getMoodKey(entry.mood) as Mood,
+                                  });
                                 }}
                                 className="p-2 rounded-md hover:bg-black hover:bg-opacity-10 transition-colors group"
                               >
@@ -261,7 +292,7 @@ export default function JournalDashboard() {
                               </Button>
                             </TooltipTrigger>
                             <TooltipContent>
-                              <p>Edit Entry (coming soon!)</p>
+                              <p>Edit Entry</p>
                             </TooltipContent>
                           </Tooltip>
                           <Tooltip>
@@ -323,7 +354,6 @@ export default function JournalDashboard() {
   );
 
   function getMoodKey(moodObj: any): string {
-    console.log("moodObj: ", moodObj);
     if (typeof moodObj === "string") {
       return moodObj;
     }

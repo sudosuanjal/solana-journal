@@ -1,3 +1,4 @@
+// journalStore.ts
 import { create } from "zustand";
 import { Connection, PublicKey } from "@solana/web3.js";
 import { getAllJournalEntries, getProgram } from "@/utils/program";
@@ -22,6 +23,7 @@ interface JournalState {
     wallet: any
   ) => Promise<void>;
   addEntry: (entry: JournalEntry) => void;
+  updateEntry: (entry: JournalEntry) => void;
 }
 
 export const useJournalStore = create<JournalState>((set) => ({
@@ -61,6 +63,19 @@ export const useJournalStore = create<JournalState>((set) => ({
         const timeB = b.createdAt ?? 0;
         return timeB - timeA;
       }),
+    }));
+  },
+  updateEntry: (entry: JournalEntry) => {
+    set((state) => ({
+      journalEntries: state.journalEntries
+        .map((e) =>
+          e.publicKey.toString() === entry.publicKey.toString() ? entry : e
+        )
+        .sort((a, b) => {
+          const timeA = a.createdAt ?? 0;
+          const timeB = b.createdAt ?? 0;
+          return timeB - timeA;
+        }),
     }));
   },
 }));

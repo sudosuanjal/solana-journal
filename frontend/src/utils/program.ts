@@ -1,3 +1,4 @@
+// program.ts
 import { Connection, PublicKey, SystemProgram } from "@solana/web3.js";
 import idl from "../idl/anchor_program.json";
 import { Idl, Program, AnchorProvider, Wallet } from "@coral-xyz/anchor";
@@ -37,6 +38,8 @@ export function getJournalEntryPDA(
     if (titleBytes.length > 100) {
       throw new Error("Title exceeds 100 bytes");
     }
+    console.log("printing titleBytes from program.ts", titleBytes);
+
     const titleHash = Buffer.from(sha256(titleBytes), "hex");
     console.log("title:", title);
     console.log("titleBytes length:", titleBytes.length);
@@ -87,6 +90,43 @@ export async function createJournalEntry(
     return txSignature;
   } catch (error) {
     console.error("Error creating journal entry:", error);
+    throw error;
+  }
+}
+
+export async function updateJournalEntry(
+  program: Program<JournalIDL>,
+  titleHash: Buffer,
+  message: string,
+  mood: Mood,
+  owner: PublicKey
+) {
+  try {
+    console.log("Updating journal entry with mood:", mood);
+    console.log("Update titleHash:", titleHash.toString("hex"));
+    const messageBytes = new TextEncoder().encode(message);
+    if (messageBytes.length > 840) {
+      throw new Error("Message exceeds 840 bytes");
+    }
+    const [journalEntryPDA] = PublicKey.findProgramAddressSync(
+      [titleHash, owner.toBuffer()],
+      PROGRAM_ID
+    );
+    console.log("JournalEntryPDA:", journalEntryPDA.toBase58());
+
+    const txSignature = await program.methods
+      .updateJournalEntry(titleHash, message, { [mood]: {} })
+      .accounts({
+        journalEntry: journalEntryPDA,
+        owner,
+        systemProgram: SystemProgram.programId,
+      })
+      .rpc();
+
+    console.log("Transaction signature:", txSignature);
+    return txSignature;
+  } catch (error) {
+    console.error("Error updating journal entry:", error);
     throw error;
   }
 }
